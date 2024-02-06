@@ -100,11 +100,28 @@ const Payment = () => {
                 body: JSON.stringify({ ...values, isPaid: true }),
               });
               if (res.ok) {
+                // Send donationEmail
+                const emailType = 'donationEmail';
+                const email = router.query.email; // Replace with the actual recipient email
+
+                // Send the request to the automaticEmail API endpoint
+                const emailResponse = await fetch(
+                  `/api/emails/automaticEmail?emailType=${emailType}&language=${language}&email=${email}`,
+                  {
+                    method: 'POST',
+                  }
+                );
+
+                if (emailResponse.ok) {
+                  console.log('Donation confirmation email successfully sent');
+                } else {
+                  console.error('Error sending donation confirmation email');
+                }
                 setStatus('success');
                 setIsOpened(true);
                 setTimeout(() => {
                   router.push('/');
-                }, 8000);
+                }, 10000);
               } else {
                 enqueueSnackbar(translate({ tKey: 'general.errorOccurred', lang: language }), { variant: 'error' });
               }
@@ -115,6 +132,25 @@ const Payment = () => {
           } else {
             setStatus('error');
             setIsOpened(true);
+
+            // Send orderEmail
+            const emailType = 'donationFailedEmail';
+            const email = router.query.email; // Replace with the actual recipient email
+
+            // Send the request to the automaticEmail API endpoint
+            const emailResponse = await fetch(
+              `/api/emails/automaticEmail?emailType=${emailType}&language=${language}&email=${email}`,
+              {
+                method: 'POST',
+              }
+            );
+
+            if (emailResponse.ok) {
+              console.log('Donation failed email successfully sent');
+            } else {
+              console.error('Error sending donation failed email');
+            }
+
             setTimeout(() => {
               router.reload();
             }, 6000);

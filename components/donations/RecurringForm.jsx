@@ -207,6 +207,23 @@ const RecurringForm = () => {
           enqueueSnackbar(translate({ tKey: 'donate.alreadyExist', lang: language }), { variant: 'info' });
           setIsSending(false);
         } else {
+          // Send orderEmail
+          const emailType = 'monthlyDonationEmail';
+          const email = values?.email; // Replace with the actual recipient email
+
+          // Send the request to the automaticEmail API endpoint
+          const emailResponse = await fetch(
+            `/api/emails/automaticEmail?emailType=${emailType}&language=${language}&email=${email}`,
+            {
+              method: 'POST',
+            }
+          );
+
+          if (emailResponse.ok) {
+            console.log('Monthly donation confirmation email successfully sent');
+          } else {
+            console.error('Error sending monthly donation confirmation email');
+          }
           setIsOpened(true);
           setTimeout(() => {
             router.push('/');

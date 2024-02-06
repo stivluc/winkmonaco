@@ -39,8 +39,8 @@ const OrderPayment = () => {
   useEffect(() => {
     const setupPaymentForm = async () => {
       try {
-        if (values.amount < 1) {
-          router.push('/404');
+        if (values.amount < 1 || values?.amount === undefined) {
+          router.push('/shop');
           return;
         }
 
@@ -99,21 +99,41 @@ const OrderPayment = () => {
                 },
                 body: JSON.stringify({ ...values, isPaid: true }),
               });
+
               if (res.ok) {
+                // Send orderEmail
+                const emailType = 'orderEmail';
+                const email = router.query.email; // Replace with the actual recipient email
+
+                // Send the request to the automaticEmail API endpoint
+                const emailResponse = await fetch(
+                  `/api/emails/automaticEmail?emailType=${emailType}&language=${language}&email=${email}`,
+                  {
+                    method: 'POST',
+                  }
+                );
+
+                if (emailResponse.ok) {
+                  console.log('Order confirmation email successfully sent');
+                } else {
+                  console.error('Error sending order confirmation email');
+                }
                 setStatus('success');
                 setIsOpened(true);
-
                 setTimeout(() => {
                   router.push('/');
                 }, 10000);
               } else {
+                // Error updating order
                 enqueueSnackbar(translate({ tKey: 'general.errorOccurred', lang: language }), { variant: 'error' });
               }
             } catch (err) {
+              // General error
               enqueueSnackbar(translate({ tKey: 'general.errorOccurred', lang: language }), { variant: 'error' });
               console.error(err);
             }
           } else {
+            // Handle other cases as needed
             setStatus('error');
             setIsOpened(true);
             setTimeout(() => {
