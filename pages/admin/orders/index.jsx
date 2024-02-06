@@ -1,7 +1,5 @@
-import React from 'react';
+import { OrdersDatagrid } from '@/schemas/orderSchema';
 
-const Orders = () => {
-  return <div>Orders</div>;
-};
-
-export default Orders;
+export default function AdminOrders() {
+  return <OrdersDatagrid />;
+}

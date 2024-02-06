@@ -17,6 +17,7 @@ import { translate } from '@/lib/translations/translate';
 import { useRouter } from 'next/router';
 import { useCart } from '@/contexts/CartContext';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export const ProductCard = ({ product, language }) => {
   const router = useRouter();
@@ -109,7 +110,19 @@ export const ProductCard = ({ product, language }) => {
       >
         <CardActionArea onClick={() => router.push('/shop/' + product._id)}>
           <Box sx={{ height: '14rem', position: 'relative' }}>
-            <CardMedia component='img' image={product.imageUrl} alt='Image' sx={{ height: '100%' }} />
+            <Image
+              src={product.imageUrl}
+              style={{
+                objectFit: 'cover',
+                width: '100%',
+                height: '100%',
+              }}
+              alt='Image article'
+              sizes='100vw'
+              width='0'
+              height='0'
+              priority
+            />
           </Box>
           <CardContent sx={{ height: '11.5rem' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

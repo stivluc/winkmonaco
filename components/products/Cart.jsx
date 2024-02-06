@@ -1,7 +1,7 @@
 import { useCart } from '@/contexts/CartContext';
 import { LanguageContext } from '@/contexts/LanguageContext';
 import { translate } from '@/lib/translations/translate';
-import { Cancel, Delete } from '@mui/icons-material';
+import { Cancel, Delete, LocalShipping } from '@mui/icons-material';
 import { Box, Button, Card, Grid, IconButton, Typography, useMediaQuery } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -13,13 +13,25 @@ const Cart = () => {
   const { language } = useContext(LanguageContext);
   const router = useRouter();
 
+  const handleDecreaseQuantity = (item) => {
+    if (item.quantity > 1) {
+      dispatch({
+        type: 'UPDATE_QUANTITY',
+        payload: { id: item.id, size: item.size, quantity: item.quantity - 1 },
+      });
+    } else {
+      // Optional: Remove the item if its quantity becomes 0
+      dispatch({ type: 'REMOVE_ITEM', payload: { id: item.id, size: item.size } });
+    }
+  };
+
   return (
     <React.Fragment>
       <Card sx={{ padding: '1rem', borderRadius: '16px' }}>
         <Grid container>
           <Grid item xs={12} md={6} sx={{ maxHeight: '30rem', overflowY: 'scroll' }}>
             {cart.items.map((item) => (
-              <React.Fragment key={item.id}>
+              <React.Fragment key={item.id + Math.random()}>
                 <Card
                   sx={{
                     display: 'flex',
@@ -62,12 +74,15 @@ const Cart = () => {
                           ? translate({ tKey: 'shop.size', lang: language }) + ' ' + item.size
                           : ''}
                       </Typography>
-                      <Typography>Quantité: {item.quantity}</Typography>
+                      <Typography>
+                        {' '}
+                        {translate({ tKey: 'shop.quantity', lang: language })}: {item.quantity}
+                      </Typography>
                       <Typography variant='h6'>{item.product.price.toLocaleString()}€</Typography>
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', padding: '1rem', alignItems: 'center' }}>
-                    <IconButton size='large' color='secondary'>
+                    <IconButton size='large' color='secondary' onClick={() => handleDecreaseQuantity(item)}>
                       <Cancel fontSize='large' color='secondary' />
                     </IconButton>
                   </Box>
@@ -81,8 +96,8 @@ const Cart = () => {
             md={6}
             sx={{ margin: { xs: '2rem auto', md: 'auto' }, flexDirection: 'column', display: 'flex' }}
           >
-            <Typography variant='h5' mb={3}>
-              Total:{' '}
+            <Typography variant='h5'>
+              {translate({ tKey: 'shop.subtotal', lang: language })}:{' '}
               <b>
                 {cart.items
                   .reduce((acc, obj) => {
@@ -92,11 +107,19 @@ const Cart = () => {
                 €
               </b>
             </Typography>
+            <Typography variant='body2'>{translate({ tKey: 'shop.shippingPrice', lang: language })}:</Typography>
+            <Typography mb={3} variant='body2'>
+              France: 5€, {translate({ tKey: 'shop.outsideFrance', lang: language })}: 10€
+            </Typography>
             <Button variant='text' sx={{ width: '250px', margin: 'auto' }} onClick={() => router.push('/shop')}>
               {translate({ tKey: 'shop.emptyCartButton', lang: language })}
             </Button>
-            <Button variant='contained' sx={{ width: '250px', margin: 'auto' }}>
-              Paiement
+            <Button
+              variant='contained'
+              sx={{ width: '250px', margin: 'auto' }}
+              onClick={() => router.push('/shop/cart/checkout')}
+            >
+              {translate({ tKey: 'shop.checkout', lang: language })}
             </Button>
           </Grid>
         </Grid>
@@ -106,11 +129,3 @@ const Cart = () => {
 };
 
 export default Cart;
-
-// id: "64e67eb62684a2bbb933aef0"
-// quantity: 1
-// size: "S"
-// product:
-// imageUrl:"https://drive.google.com/uc?export=view&id=1u1rZ76BHpQfXvXObgu-knqnkvrws6aNW"
-// name: "DANCE"
-// price: 987

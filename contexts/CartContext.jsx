@@ -25,7 +25,11 @@ const cartReducer = (state, action) => {
       }
     case 'REMOVE_ITEM':
       // Find the item in the cart
-      const updatedItems = state.items.filter((item) => item.id !== action.payload.id);
+      console.log(action.payload);
+      console.log(state.items);
+      const updatedItems = state.items.filter(
+        (item) => item.id !== action.payload.id || item.size !== action.payload.size
+      );
       return { ...state, items: updatedItems };
     case 'UPDATE_QUANTITY':
       // Update the quantity of a specific item in the cart

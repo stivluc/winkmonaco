@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import React, { useContext, useEffect, useState } from 'react';
 
-const Payment = () => {
+const OrderPayment = () => {
   const [status, setStatus] = useState('');
   const [isOpened, setIsOpened] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -39,8 +39,8 @@ const Payment = () => {
   useEffect(() => {
     const setupPaymentForm = async () => {
       try {
-        if (values.amount < 1 || values?.amount === undefined) {
-          router.push('/');
+        if (values.amount < 1) {
+          router.push('/404');
           return;
         }
 
@@ -92,7 +92,7 @@ const Payment = () => {
 
           if (response.status === 200 && paymentResponse.orderStatus === 'PAID') {
             try {
-              const res = await fetch('/api/donations/' + router.query._id, {
+              const res = await fetch('/api/orders/' + router.query._id, {
                 method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',
@@ -102,9 +102,10 @@ const Payment = () => {
               if (res.ok) {
                 setStatus('success');
                 setIsOpened(true);
+
                 setTimeout(() => {
                   router.push('/');
-                }, 8000);
+                }, 10000);
               } else {
                 enqueueSnackbar(translate({ tKey: 'general.errorOccurred', lang: language }), { variant: 'error' });
               }
@@ -140,13 +141,13 @@ const Payment = () => {
   return (
     <React.Fragment>
       <Head>
-        <title>{translate({ tKey: 'nav.donate', lang: language }) + ' - Wink Monaco'}</title>
+        <title>{translate({ tKey: 'nav.shop', lang: language }) + ' - Wink Monaco'}</title>
       </Head>
       {status === 'success' && (
         <SuccessModal
           opened={isOpened}
-          title={translate({ lang: language, tKey: 'donate.thankYou' })}
-          text={translate({ lang: language, tKey: 'donate.modalText' })}
+          title={translate({ lang: language, tKey: 'shop.confirmationTitle' })}
+          text={translate({ lang: language, tKey: 'shop.confirmation' })}
         />
       )}
       {status === 'error' && (
@@ -169,7 +170,7 @@ const Payment = () => {
           {translate({ tKey: 'donate.title', lang: language })}
         </Typography>
         <Box sx={{ marginTop: '-1rem', textAlign: 'left' }}>
-          <Button startIcon={<ArrowBack />} onClick={() => router.push('/donate/oneTime')}>
+          <Button startIcon={<ArrowBack />} onClick={() => router.push('/shop/cart/checkout')}>
             {translate({ tKey: 'general.back', lang: language })}
           </Button>
         </Box>
@@ -209,7 +210,7 @@ const Payment = () => {
   );
 };
 
-export default Payment;
+export default OrderPayment;
 
 export async function getServerSideProps(context) {
   return {
