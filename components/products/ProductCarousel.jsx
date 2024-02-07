@@ -24,7 +24,7 @@ const ImageCarousel = ({ pictures }) => {
 
   return (
     <Box sx={{ position: 'relative', overflow: 'hidden' }}>
-      <Slider {...settings} style={{ marginBottom: '2rem', height: '20rem' }}>
+      <Slider {...settings} style={{ marginBottom: '2rem', height: isMobile ? '18rem' : '20rem' }}>
         {pictures.map((picture, index) => (
           <Box key={index} sx={{ padding: '0 5px' }}>
             <Image

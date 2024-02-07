@@ -25,8 +25,6 @@ const cartReducer = (state, action) => {
       }
     case 'REMOVE_ITEM':
       // Find the item in the cart
-      console.log(action.payload);
-      console.log(state.items);
       const updatedItems = state.items.filter(
         (item) => item.id !== action.payload.id || item.size !== action.payload.size
       );

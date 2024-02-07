@@ -186,7 +186,7 @@ const ShippingForm = ({ language }) => {
     values.amount = parseInt(
       cart.items.reduce((acc, obj) => {
         return acc + obj.product.price * obj.quantity;
-      }, 0) + (values.country === 'FR' ? 5 : 10)
+      }, 0) + (values.country === 'FR' || values.country === 'MC' ? 5 : 10)
     );
     values.isPaid = false;
     values.createdAt = new Date();
@@ -227,7 +227,7 @@ const ShippingForm = ({ language }) => {
       addressDetails: '',
       zipCode: '',
       city: '',
-      country: '',
+      country: 'FR',
       agreeTerms: false,
     },
     enableReinitialize: true,
@@ -468,7 +468,7 @@ const ShippingForm = ({ language }) => {
                 </Typography>
                 <Typography variant='body1' textAlign='left'>
                   {translate({ tKey: 'shop.shippingPrice', lang: language })}:{' '}
-                  {formik.values.country === 'FR' ? '5€' : '10€'}
+                  {formik.values.country === 'FR' || formik.values.country === 'MC' ? '5€' : '10€'}
                 </Typography>
                 <Typography variant='h6' textAlign='left' mt={1}>
                   {translate({ tKey: 'shop.total', lang: language })}:{' '}
@@ -476,7 +476,7 @@ const ShippingForm = ({ language }) => {
                     {(
                       cart.items.reduce((acc, obj) => {
                         return acc + obj.product.price * obj.quantity;
-                      }, 0) + (formik.values.country === 'FR' ? 5 : 10)
+                      }, 0) + (formik.values.country === 'FR' || formik.values.country === 'MC' ? 5 : 10)
                     ).toLocaleString()}
                     €
                   </b>

@@ -128,6 +128,7 @@ export const productSchema = [
   {
     name: 'sizes',
     placeholder: `Tailles disponibles - séparées par ";"`,
+    title: "Tailles disponibles, à séparer par ';'",
     type: 'text',
     initialValue: '',
     muiHeaderName: 'Tailles',

@@ -132,7 +132,7 @@ const Product = ({ id }) => {
               xs={12}
               md={6}
               sx={{
-                padding: '0.5rem 1.5rem 2rem',
+                padding: { xs: '0.5rem 0.5rem 1rem', md: '0.5rem 1.5rem 2rem' },
                 textAlign: 'left',
                 display: 'flex',
                 flexDirection: 'column',
