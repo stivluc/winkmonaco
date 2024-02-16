@@ -25,21 +25,23 @@ export default async function handler(req, res) {
 
   // Define email options
   const mailOptions = {
-    from: 'noreply.winkmonaco@gmail.com', // Sender email address
+    from: process.env.EMAIL_USER, // Sender email address
     to: email, // Recipient email address
     subject: emailContent.subject, // Email subject
     html: emailContent.emailContent, // Email content in HTML format
   };
 
   try {
+    // Attempt to send the email
     await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully');
-  } catch (error) {
-    console.error('Error sending email:', error);
-  }
 
-  // Respond with a success message
-  res.status(200).json({ message: 'Email sent successfully' });
+    // If sending email is successful, respond with success message
+    res.status(200).json({ message: 'Email sent successfully' });
+  } catch (error) {
+    // If an error occurs while sending email, log the error and respond with error message
+    console.error('Error sending email:', error);
+    res.status(500).json({ error: 'Error sending email' });
+  }
 }
 
 //* Get Email Content
