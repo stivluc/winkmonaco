@@ -25,7 +25,7 @@ export default async function handler(req, res) {
 
   // Define email options
   const mailOptions = {
-    from: 'your_email@example.com', // Sender email address
+    from: 'noreply.winkmonaco@gmail.com', // Sender email address
     to: email, // Recipient email address
     subject: emailContent.subject, // Email subject
     html: emailContent.emailContent, // Email content in HTML format
