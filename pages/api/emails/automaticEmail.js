@@ -34,40 +34,34 @@ export default async function handler(req, res) {
     html: emailContent.emailContent, // Email content in HTML format
   };
 
-  try {
-    // Verify transporter configuration
-    await new Promise((resolve, reject) => {
-      transporter.verify(function (error, success) {
-        if (error) {
-          console.error('Transporter verification error:', error);
-          reject(error);
-        } else {
-          console.log('Server is ready to take our messages');
-          resolve(success);
-        }
-      });
+  // Verify transporter configuration
+  await new Promise((resolve, reject) => {
+    transporter.verify(function (error, success) {
+      if (error) {
+        console.error('Transporter verification error:', error);
+        reject(error);
+      } else {
+        console.log('Server is ready to take our messages');
+        resolve(success);
+      }
     });
+  });
 
-    // Attempt to send the email
-    await new Promise((resolve, reject) => {
-      transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-          console.error('Error sending email:', err);
-          reject(err);
-        } else {
-          console.log('Email sent successfully:', info);
-          resolve(info);
-        }
-      });
+  // Attempt to send the email
+  await new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error('Error sending email:', err);
+        reject(err);
+      } else {
+        console.log('Email sent successfully:', info);
+        resolve(info);
+      }
     });
+  });
 
-    // If sending email is successful, respond with success message
-    res.status(200).json({ message: 'Email sent successfully' });
-  } catch (error) {
-    // If an error occurs while sending email, log the error and respond with error message
-    console.error('Error sending email:', error);
-    res.status(500).json({ error: 'Error sending email' });
-  }
+  // If sending email is successful, respond with success message
+  res.status(200).json({ message: 'Email sent successfully' });
 }
 
 //* Get Email Content
