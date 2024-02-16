@@ -25,23 +25,43 @@ export default async function handler(req, res) {
 
   // Define email options
   const mailOptions = {
-    from: process.env.EMAIL_USER, // Sender email address
+    from: {
+      name: `Wink Monaco`,
+      address: process.env.EMAIL_USER,
+    },
     to: email, // Recipient email address
     subject: emailContent.subject, // Email subject
     html: emailContent.emailContent, // Email content in HTML format
   };
 
-  try {
-    // Attempt to send the email
-    await transporter.sendMail(mailOptions);
+  // Verify transporter configuration
+  await new Promise((resolve, reject) => {
+    transporter.verify(function (error, success) {
+      if (error) {
+        console.error('Transporter verification error:', error);
+        reject(error);
+      } else {
+        console.log('Server is ready to take our messages');
+        resolve(success);
+      }
+    });
+  });
 
-    // If sending email is successful, respond with success message
-    res.status(200).json({ message: 'Email sent successfully' });
-  } catch (error) {
-    // If an error occurs while sending email, log the error and respond with error message
-    console.error('Error sending email:', error);
-    res.status(500).json({ error: 'Error sending email' });
-  }
+  // Attempt to send the email
+  await new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error('Error sending email:', err);
+        reject(err);
+      } else {
+        console.log('Email sent successfully:', info);
+        resolve(info);
+      }
+    });
+  });
+
+  // If sending email is successful, respond with success message
+  res.status(200).json({ message: 'Email sent successfully' });
 }
 
 //* Get Email Content
