@@ -9,6 +9,7 @@ import {
 import { enOrderEmail, frOrderEmail, itOrderEmail } from '@/lib/emails/orderEmail';
 import { enVolunteerEmail, frVolunteerEmail, itVolunteerEmail } from '@/lib/emails/volunteerEmail';
 // import { transporter } from '@/lib/mailer';
+import nodemailer from 'nodemailer';
 
 export default async function handler(req, res) {
   // Extract parameters from the query
