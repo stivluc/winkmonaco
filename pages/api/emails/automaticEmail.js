@@ -8,7 +8,7 @@ import {
 } from '@/lib/emails/monthlyDonationEmail';
 import { enOrderEmail, frOrderEmail, itOrderEmail } from '@/lib/emails/orderEmail';
 import { enVolunteerEmail, frVolunteerEmail, itVolunteerEmail } from '@/lib/emails/volunteerEmail';
-import { transporter } from '@/lib/mailer';
+// import { transporter } from '@/lib/mailer';
 
 export default async function handler(req, res) {
   // Extract parameters from the query
@@ -22,6 +22,20 @@ export default async function handler(req, res) {
     res.status(400).json({ error: 'Invalid emailType or language' });
     return;
   }
+
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // use SSL
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+    from: {
+      name: `Wink Monaco`,
+      address: process.env.EMAIL_USER,
+    },
+  });
 
   // Define email options
   const mailOptions = {
