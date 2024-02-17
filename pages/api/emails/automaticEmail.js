@@ -34,11 +34,11 @@ export default async function handler(req, res) {
     html: emailContent.emailContent, // Email content in HTML format
   };
 
-  // Verify transporter configuration
   await new Promise((resolve, reject) => {
+    // verify connection configuration
     transporter.verify(function (error, success) {
       if (error) {
-        console.error('Transporter verification error:', error);
+        console.log(error);
         reject(error);
       } else {
         console.log('Server is ready to take our messages');
