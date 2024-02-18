@@ -14,6 +14,7 @@ import { enVolunteerEmail, frVolunteerEmail, itVolunteerEmail } from '@/lib/emai
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export default async function handler(req, res) {
+  console.log(process.env.SENDGRID_API_KEY);
   // Extract parameters from the query
   const { emailType, language, email } = req.query;
 
