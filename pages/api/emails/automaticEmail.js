@@ -1,3 +1,4 @@
+import sgMail from '@sendgrid/mail';
 import { enDonationEmail, frDonationEmail, itDonationEmail } from '@/lib/emails/donationEmail';
 import { enDonationFailedEmail, frDonationFailedEmail, itDonationFailedEmail } from '@/lib/emails/donationFailedEmail';
 import { enKitWinkEmail, frKitWinkEmail, itKitWinkEmail } from '@/lib/emails/kitWinkEmail';
@@ -8,7 +9,6 @@ import {
 } from '@/lib/emails/monthlyDonationEmail';
 import { enOrderEmail, frOrderEmail, itOrderEmail } from '@/lib/emails/orderEmail';
 import { enVolunteerEmail, frVolunteerEmail, itVolunteerEmail } from '@/lib/emails/volunteerEmail';
-import sgMail from '@sendgrid/mail';
 
 // Set the SendGrid API Key
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -27,22 +27,25 @@ export default async function handler(req, res) {
   }
 
   const msg = {
-    from: { email: process.env.EMAIL_USER, name: 'Wink Monaco' }, // Sender email address
-    to: email, // Recipient email address
-    subject: emailContent.subject, // Email subject
-    html: emailContent.emailContent, // Email content in HTML format
+    from: { email: process.env.EMAIL_USER, name: 'Wink Monaco' }, // Use your verified sender address here
+    to: email,
+    subject: emailContent.subject,
+    html: emailContent.emailContent,
   };
 
-  sgMail
-    .send(msg)
-    .then(() => {
-      console.log('Email sent successfully');
-      res.status(200).json({ message: 'Email sent successfully' });
-    })
-    .catch((error) => {
-      console.error('Error sending email:', error);
-      res.status(500).json({ error: 'Failed to send email' });
-    });
+  // Using async/await syntax for clarity and better error handling
+  try {
+    await sgMail.send(msg);
+    console.log('Email sent successfully');
+    res.status(200).json({ message: 'Email sent successfully' });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    // Log detailed error
+    if (error.response) {
+      console.error(error.response.body);
+    }
+    res.status(500).json({ error: 'Failed to send email', details: error.message });
+  }
 }
 
 //* Get Email Content
