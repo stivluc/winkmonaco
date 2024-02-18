@@ -1,9 +1,12 @@
 import { dbConnect, dbDisconnect } from '@/lib/dbConnect';
-import { transporter } from '@/lib/mailer';
 import { DonationModel } from '@/schemas/donationSchema';
 import { EmailModel } from '@/schemas/emailSchema';
 import { SubscriptionModel } from '@/schemas/subscriptionSchema';
 import { VolunteerModel } from '@/schemas/volunteerSchema';
+import sgMail from '@sendgrid/mail';
+
+// Set the SendGrid API Key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Define your email sending route
 export default async function handler(req, res) {
@@ -79,36 +82,22 @@ export default async function handler(req, res) {
     // Deduplicate recipientEmails
     recipientEmails = [...new Set(recipientEmails)];
 
-    // A helper function to promisify transporter.sendMail
-    const sendEmail = (mailOptions) => {
-      return new Promise((resolve, reject) => {
-        transporter.sendMail(mailOptions, (error, info) => {
-          if (error) {
-            console.error('Email sending error:', error);
-            reject(error);
-          } else {
-            console.log('Email sent: ' + info.response);
-            resolve(info);
-          }
+    recipientEmails.map((email) => {
+      const msg = {
+        from: { email: process.env.EMAIL_USER, name: 'Wink Monaco' }, // Sender email address
+        to: email,
+        subject: subject,
+        html: isHtml ? text : textToHTML(text),
+      };
+      return sgMail
+        .send(msg)
+        .then(() => {
+          console.log('Email sent successfully');
+        })
+        .catch((error) => {
+          console.error('Error sending email');
         });
-      });
-    };
-
-    // Use Promise.all to wait for all emails to be sent
-    await Promise.all(
-      recipientEmails.map((email) => {
-        const mailOptions = {
-          from: {
-            name: 'Wink Monaco',
-            address: 'noreply.winkmonaco@example.com',
-          },
-          to: email,
-          subject: subject,
-          html: isHtml ? text : textToHTML(text),
-        };
-        return sendEmail(mailOptions);
-      })
-    );
+    });
 
     // If all emails were sent successfully, save the record
     const newEmail = new EmailModel({

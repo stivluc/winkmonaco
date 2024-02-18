@@ -8,8 +8,10 @@ import {
 } from '@/lib/emails/monthlyDonationEmail';
 import { enOrderEmail, frOrderEmail, itOrderEmail } from '@/lib/emails/orderEmail';
 import { enVolunteerEmail, frVolunteerEmail, itVolunteerEmail } from '@/lib/emails/volunteerEmail';
-// import { transporter } from '@/lib/mailer';
-import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
+
+// Set the SendGrid API Key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export default async function handler(req, res) {
   // Extract parameters from the query
@@ -24,59 +26,23 @@ export default async function handler(req, res) {
     return;
   }
 
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // use SSL
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    from: {
-      name: `Wink Monaco`,
-      address: process.env.EMAIL_USER,
-    },
-  });
-
-  // Define email options
-  const mailOptions = {
-    from: {
-      name: `Wink Monaco`,
-      address: process.env.EMAIL_USER,
-    },
+  const msg = {
+    from: { email: process.env.EMAIL_USER, name: 'Wink Monaco' }, // Sender email address
     to: email, // Recipient email address
     subject: emailContent.subject, // Email subject
     html: emailContent.emailContent, // Email content in HTML format
   };
 
-  await new Promise((resolve, reject) => {
-    // verify connection configuration
-    transporter.verify(function (error, success) {
-      if (error) {
-        console.log(error);
-        reject(error);
-      } else {
-        console.log('Server is ready to take our messages');
-        resolve(success);
-      }
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log('Email sent successfully');
+      res.status(200).json({ message: 'Email sent successfully' });
+    })
+    .catch((error) => {
+      console.error('Error sending email:', error);
+      res.status(500).json({ error: 'Failed to send email' });
     });
-  });
-
-  // Attempt to send the email
-  await new Promise((resolve, reject) => {
-    transporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.error('Error sending email:', err);
-        reject(err);
-      } else {
-        console.log('Email sent successfully:', info);
-        resolve(info);
-      }
-    });
-  });
-
-  // If sending email is successful, respond with success message
-  res.status(200).json({ message: 'Email sent successfully' });
 }
 
 //* Get Email Content
