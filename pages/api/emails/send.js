@@ -1,5 +1,8 @@
 import { dbConnect, dbDisconnect } from '@/lib/dbConnect';
-import { DonationModel, EmailModel, SubscriptionModel, VolunteerModel } from '@/schemas';
+import DonationModel from '@/schemas/DonationModel';
+import SubscriptionModel from '@/schemas/SubscriptionModel';
+import VolunteerModel from '@/schemas/VolunteerModel';
+import EmailModel from '@/schemas/EmailModel';
 import sgMail from '@sendgrid/mail';
 
 // Set the SendGrid API Key
