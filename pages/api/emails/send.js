@@ -6,66 +6,72 @@ import { EmailModel } from '@/schemas/emailSchema';
 import { transporter } from '@/lib/transporter';
 
 export default async function handler(req, res) {
-  try {
-    const { group, subject, text, emails, isHtml } = req.body;
-    await dbConnect();
+  const { group, subject, text, emails, isHtml } = req.body;
+  await dbConnect();
 
-    let recipientEmails = await getEmailsBasedOnGroup(group, emails); // Assuming this function encapsulates the switch logic and returns the emails array
+  let recipientEmails = await getEmailsBasedOnGroup(group, emails); // Assuming this function encapsulates the switch logic and returns the emails array
 
-    // Deduplicate recipientEmails
-    recipientEmails = [...new Set(recipientEmails)];
+  // Deduplicate recipientEmails
+  recipientEmails = [...new Set(recipientEmails)];
 
-    // A helper function to promisify transporter.sendMail
-    const sendEmail = (mailOptions) => {
-      return new Promise((resolve, reject) => {
-        transporter.sendMail(mailOptions, (error, info) => {
-          if (error) {
-            console.error('Error sending email:', error);
-            reject(error);
-          } else {
-            console.log('Email sent: ' + info.response);
-            resolve(info);
-          }
-        });
-      });
-    };
-
-    // Use Promise.all to wait for all emails to be sent
-    await Promise.all(
-      recipientEmails.map((email) => {
-        const mailOptions = {
-          from: {
-            name: 'Wink Monaco',
-            address: 'noreply.winkmonaco@example.com',
-          },
-          to: email,
-          subject: subject,
-          html: isHtml ? text : textToHTML(text),
-        };
-        return sendEmail(mailOptions);
-      })
-    );
-
-    // Log and save email record after all emails are sent
-    console.log('All emails sent successfully');
-
-    const newEmail = new EmailModel({
-      subject: subject,
-      sentOn: new Date(),
-      count: recipientEmails.length,
-      group: group,
-      comment: '',
+  await new Promise((resolve, reject) => {
+    // verify connection configuration
+    transporter.verify(function (error, success) {
+      if (error) {
+        console.log(error);
+        reject(error);
+      } else {
+        console.log('Server is ready to take our messages');
+        resolve(success);
+      }
     });
+  });
 
-    await newEmail.save();
+  // A helper function to promisify transporter.sendMail
+  const sendEmail = (mailOptions) => {
+    return new Promise((resolve, reject) => {
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+          reject(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+          resolve(info);
+        }
+      });
+    });
+  };
 
-    res.status(200).json({ message: 'Emails sent successfully' });
-  } catch (error) {
-    console.error('Error sending email:', error);
-    res.status(500).json({ message: 'Error sending email', error: error.message });
-  } finally {
-    await dbDisconnect();
-  }
+  // Use Promise.all to wait for all emails to be sent
+  await Promise.all(
+    recipientEmails.map((email) => {
+      const mailOptions = {
+        from: {
+          name: 'Wink Monaco',
+          address: 'noreply.winkmonaco@example.com',
+        },
+        to: email,
+        subject: subject,
+        html: isHtml ? text : textToHTML(text),
+      };
+      return sendEmail(mailOptions);
+    })
+  );
+
+  // Log and save email record after all emails are sent
+  console.log('All emails sent successfully');
+
+  const newEmail = new EmailModel({
+    subject: subject,
+    sentOn: new Date(),
+    count: recipientEmails.length,
+    group: group,
+    comment: '',
+  });
+
+  await newEmail.save();
+
+  res.status(200).json({ message: 'Emails sent successfully' });
 }
 
 function textToHTML(text) {
