@@ -1,8 +1,8 @@
 import { dbConnect, dbDisconnect } from '@/lib/dbConnect';
-import DonationModel from '@/schemas/donationSchema';
-import SubscriptionModel from '@/schemas/subscriptionSchema';
-import VolunteerModel from '@/schemas/volunteerSchema';
-import EmailModel from '@/schemas/emailSchema';
+import { DonationModel } from '@/schemas/donationSchema';
+import { SubscriptionModel } from '@/schemas/subscriptionSchema';
+import { VolunteerModel } from '@/schemas/volunteerSchema';
+import { EmailModel } from '@/schemas/emailSchema';
 import { transporter } from '@/lib/transporter';
 
 export default async function handler(req, res) {
