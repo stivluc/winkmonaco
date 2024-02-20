@@ -14,49 +14,18 @@ export default async function handler(req, res) {
   // Deduplicate recipientEmails
   recipientEmails = [...new Set(recipientEmails)];
 
-  await new Promise((resolve, reject) => {
-    // verify connection configuration
-    transporter.verify(function (error, success) {
-      if (error) {
-        console.log(error);
-        reject(error);
-      } else {
-        console.log('Server is ready to take our messages');
-        resolve(success);
-      }
-    });
+  recipientEmails.map((email) => {
+    const mailOptions = {
+      from: {
+        name: 'Wink Monaco',
+        address: 'noreply.winkmonaco@example.com',
+      },
+      to: email,
+      subject: subject,
+      html: isHtml ? text : textToHTML(text),
+    };
+    transporter.sendMail(mailOptions);
   });
-
-  // A helper function to promisify transporter.sendMail
-  const sendEmail = (mailOptions) => {
-    return new Promise((resolve, reject) => {
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Error sending email:', error);
-          reject(error);
-        } else {
-          console.log('Email sent: ' + info.response);
-          resolve(info);
-        }
-      });
-    });
-  };
-
-  // Use Promise.all to wait for all emails to be sent
-  await Promise.all(
-    recipientEmails.map((email) => {
-      const mailOptions = {
-        from: {
-          name: 'Wink Monaco',
-          address: 'noreply.winkmonaco@example.com',
-        },
-        to: email,
-        subject: subject,
-        html: isHtml ? text : textToHTML(text),
-      };
-      return sendEmail(mailOptions);
-    })
-  );
 
   // Log and save email record after all emails are sent
   console.log('All emails sent successfully');
