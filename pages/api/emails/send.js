@@ -3,10 +3,7 @@ import DonationModel from '@/schemas/donationSchema';
 import SubscriptionModel from '@/schemas/subscriptionSchema';
 import VolunteerModel from '@/schemas/volunteerSchema';
 import EmailModel from '@/schemas/emailSchema';
-import sgMail from '@sendgrid/mail';
-
-// Set the SendGrid API Key
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+import { transporter } from '@/lib/transporter';
 
 export default async function handler(req, res) {
   try {
@@ -18,21 +15,40 @@ export default async function handler(req, res) {
     // Deduplicate recipientEmails
     recipientEmails = [...new Set(recipientEmails)];
 
-    const sendEmailPromises = recipientEmails.map((email) => {
-      const msg = {
-        to: email,
-        from: { email: process.env.EMAIL_USER, name: 'Wink Monaco' },
-        subject: subject,
-        html: isHtml ? text : textToHTML(text),
-      };
-      return sgMail.send(msg);
-    });
+    // A helper function to promisify transporter.sendMail
+    const sendEmail = (mailOptions) => {
+      return new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.error('Error sending email:', error);
+            reject(error);
+          } else {
+            console.log('Email sent: ' + info.response);
+            resolve(info);
+          }
+        });
+      });
+    };
 
-    // Wait for all emails to be sent
-    await Promise.all(sendEmailPromises);
+    // Use Promise.all to wait for all emails to be sent
+    await Promise.all(
+      recipientEmails.map((email) => {
+        const mailOptions = {
+          from: {
+            name: 'Wink Monaco',
+            address: 'noreply.winkmonaco@example.com',
+          },
+          to: email,
+          subject: subject,
+          html: isHtml ? text : textToHTML(text),
+        };
+        return sendEmail(mailOptions);
+      })
+    );
 
     // Log and save email record after all emails are sent
     console.log('All emails sent successfully');
+
     const newEmail = new EmailModel({
       subject: subject,
       sentOn: new Date(),
@@ -40,12 +56,13 @@ export default async function handler(req, res) {
       group: group,
       comment: '',
     });
+
     await newEmail.save();
 
     res.status(200).json({ message: 'Emails sent successfully' });
   } catch (error) {
-    console.error('Email sending error:', error);
-    res.status(500).json({ message: 'Email sending error', error: error.message });
+    console.error('Error sending email:', error);
+    res.status(500).json({ message: 'Error sending email', error: error.message });
   } finally {
     await dbDisconnect();
   }
