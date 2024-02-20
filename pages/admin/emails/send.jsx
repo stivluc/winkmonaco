@@ -117,7 +117,7 @@ const SendEmail = () => {
       values.emails = emails;
 
       const response = await fetch('/api/emails/send', {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
