@@ -1,4 +1,4 @@
-import sgMail from '@sendgrid/mail';
+import { transporter } from '@/lib/transporter';
 import { enDonationEmail, frDonationEmail, itDonationEmail } from '@/lib/emails/donationEmail';
 import { enDonationFailedEmail, frDonationFailedEmail, itDonationFailedEmail } from '@/lib/emails/donationFailedEmail';
 import { enKitWinkEmail, frKitWinkEmail, itKitWinkEmail } from '@/lib/emails/kitWinkEmail';
@@ -10,41 +10,43 @@ import {
 import { enOrderEmail, frOrderEmail, itOrderEmail } from '@/lib/emails/orderEmail';
 import { enVolunteerEmail, frVolunteerEmail, itVolunteerEmail } from '@/lib/emails/volunteerEmail';
 
-// Set the SendGrid API Key
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
 export default async function handler(req, res) {
-  console.log(process.env.SENDGRID_API_KEY);
-  // Extract parameters from the query
-  const { emailType, language, email } = req.query;
-
-  // Get email content based on emailType and language
-  const emailContent = getEmailContent(emailType, language);
-
-  // Check if email content is found
-  if (!emailContent) {
-    res.status(400).json({ error: 'Invalid emailType or language' });
-    return;
-  }
-
-  const msg = {
-    from: { email: process.env.EMAIL_USER, name: 'Wink Monaco' }, // Use your verified sender address here
-    to: email,
-    subject: emailContent.subject,
-    html: emailContent.emailContent,
-  };
-
-  // Using async/await syntax for clarity and better error handling
   try {
-    await sgMail.send(msg);
-    console.log('Email sent successfully');
-    res.status(200).json({ message: 'Email sent successfully' });
+    // Extract parameters from the query
+    const { emailType, language, email } = req.query;
+
+    // Get email content based on emailType and language
+    const emailContent = await getEmailContent(emailType, language);
+
+    // Check if email content is found
+    if (!emailContent) {
+      res.status(400).json({ error: 'Invalid emailType or language' });
+      return;
+    }
+
+    const mailOptions = {
+      from: {
+        name: 'Wink Monaco',
+        address: 'noreply.winkmonaco@gmail.com',
+      },
+      to: email,
+      subject: emailContent.subject,
+      html: emailContent.emailContent,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error while sending email:', error);
+        res.status(500).json({ error: 'Failed to send email', details: error.message });
+      } else {
+        console.log('Email sent: ' + info.response);
+        res.status(200).json({ message: 'Email sent successfully' });
+      }
+
+      res.status(200).json({ message: 'Email sent successfully' });
+    });
   } catch (error) {
     console.error('Error sending email:', error);
-    // Log detailed error
-    if (error.response) {
-      console.error(error.response.body);
-    }
     res.status(500).json({ error: 'Failed to send email', details: error.message });
   }
 }
@@ -52,7 +54,7 @@ export default async function handler(req, res) {
 //* Get Email Content
 
 // Function to get email content based on emailType and language
-const getEmailContent = (emailType, language) => {
+const getEmailContent = async (emailType, language) => {
   switch (emailType) {
     case 'donationEmail':
       return getDonationEmailContent(language);
