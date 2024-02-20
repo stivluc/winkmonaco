@@ -71,7 +71,7 @@ export default async function handler(req, res) {
 
   await newEmail.save();
 
-  res.status(200).json({ message: 'Emails sent successfully' });
+  res.status(201).json({ message: 'Emails sent successfully' });
 }
 
 function textToHTML(text) {
