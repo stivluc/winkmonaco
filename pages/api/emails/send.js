@@ -14,12 +14,21 @@ export default async function handler(req, res) {
   // Deduplicate recipientEmails
   recipientEmails = [...new Set(recipientEmails)];
 
+  // const mailTransport = nodemailer.createTransport({
+  //   port: 465,
+  //   host: 'smtp.gmail.com',
+  //   auth: {
+  //     user: process.env.EMAIL_USER,
+  //     pass: process.env.EMAIL_PASS,
+  //   },
+  //   secure: true,
+  // });
   const mailTransport = nodemailer.createTransport({
     port: 465,
     host: 'smtp.gmail.com',
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user: 'noreply.winkmonaco@gmail.com',
+      pass: 'llqoqatuaklolhhv',
     },
     secure: true,
   });
