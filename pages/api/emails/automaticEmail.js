@@ -1,4 +1,3 @@
-import { transporter } from '@/lib/transporter';
 import { enDonationEmail, frDonationEmail, itDonationEmail } from '@/lib/emails/donationEmail';
 import { enDonationFailedEmail, frDonationFailedEmail, itDonationFailedEmail } from '@/lib/emails/donationFailedEmail';
 import { enKitWinkEmail, frKitWinkEmail, itKitWinkEmail } from '@/lib/emails/kitWinkEmail';
@@ -9,6 +8,7 @@ import {
 } from '@/lib/emails/monthlyDonationEmail';
 import { enOrderEmail, frOrderEmail, itOrderEmail } from '@/lib/emails/orderEmail';
 import { enVolunteerEmail, frVolunteerEmail, itVolunteerEmail } from '@/lib/emails/volunteerEmail';
+import nodemailer from 'nodemailer';
 
 export default async function handler(req, res) {
   try {
@@ -34,15 +34,29 @@ export default async function handler(req, res) {
       html: emailContent.emailContent,
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error('Error while sending email:', error);
-      } else {
-        console.log('Email sent: ' + info.response);
-      }
+    const mailTransport = nodemailer.createTransport({
+      port: 465,
+      host: 'smtp.gmail.com',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      secure: true,
     });
 
-    res.status(200).json({ message: 'Email sent successfully' });
+    await new Promise((resolve, reject) => {
+      mailTransport.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error while sending email:', error);
+          reject(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+          resolve(info);
+        }
+      });
+    });
+
+    res.status(201).json({ message: 'Email sent successfully' });
   } catch (error) {
     console.error('Error sending email:', error);
     res.status(500).json({ error: 'Failed to send email', details: error.message });

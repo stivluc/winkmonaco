@@ -3,7 +3,7 @@ import { DonationModel } from '@/schemas/donationSchema';
 import { SubscriptionModel } from '@/schemas/subscriptionSchema';
 import { VolunteerModel } from '@/schemas/volunteerSchema';
 import { EmailModel } from '@/schemas/emailSchema';
-import { transporter } from '@/lib/transporter';
+import nodemailer from 'nodemailer';
 
 export default async function handler(req, res) {
   const { group, subject, text, emails, isHtml } = req.body;
@@ -14,33 +14,50 @@ export default async function handler(req, res) {
   // Deduplicate recipientEmails
   recipientEmails = [...new Set(recipientEmails)];
 
-  recipientEmails.map((email) => {
-    const mailOptions = {
-      from: {
-        name: 'Wink Monaco',
-        address: 'noreply.winkmonaco@example.com',
-      },
-      to: email,
+  const mailTransport = nodemailer.createTransport({
+    port: 465,
+    host: 'smtp.gmail.com',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+    secure: true,
+  });
+
+  try {
+    await Promise.all(
+      recipientEmails.map(async (email) => {
+        const mailOptions = {
+          from: {
+            name: 'Wink Monaco',
+            address: 'noreply.winkmonaco@gmail.com',
+          },
+          to: email,
+          subject: subject,
+          html: isHtml ? text : textToHTML(text),
+        };
+        await mailTransport.sendMail(mailOptions);
+      })
+    );
+
+    // Log and save email record after all emails are sent
+    console.log('All emails sent successfully');
+
+    const newEmail = new EmailModel({
       subject: subject,
-      html: isHtml ? text : textToHTML(text),
-    };
-    transporter.sendMail(mailOptions);
-  });
+      sentOn: new Date(),
+      count: recipientEmails.length,
+      group: group,
+      comment: '',
+    });
 
-  // Log and save email record after all emails are sent
-  console.log('All emails sent successfully');
+    await newEmail.save();
 
-  const newEmail = new EmailModel({
-    subject: subject,
-    sentOn: new Date(),
-    count: recipientEmails.length,
-    group: group,
-    comment: '',
-  });
-
-  await newEmail.save();
-
-  res.status(201).json({ message: 'Emails sent successfully' });
+    res.status(201).json({ message: 'Emails sent successfully' });
+  } catch (error) {
+    console.error('Error sending emails:', error);
+    res.status(500).json({ error: 'Error sending emails' });
+  }
 }
 
 function textToHTML(text) {
