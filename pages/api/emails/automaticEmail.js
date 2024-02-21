@@ -34,6 +34,7 @@ export default async function handler(req, res) {
       html: emailContent.emailContent,
     };
 
+    // Retry with local transporter
     const mailTransport = nodemailer.createTransport({
       port: 465,
       host: 'smtp.gmail.com',
