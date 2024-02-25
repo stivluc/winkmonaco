@@ -24,21 +24,20 @@ const AdminContact = () => {
         <Typography color='' variant='h4' mb={3}>
           Version française
         </Typography>
-        <ContactCard data={data} loading={isLoading} />
+        <ContactCard french data={data} loading={isLoading} />
       </Grid>
-        <Grid item xs={12} lg={6} mb={3}>
-            <Typography color='' variant='h4' mb={3}>
-                Version française
-            </Typography>
-            <ContactCard data={data} loading={isLoading} />
-        </Grid>
       <Grid item xs={12} lg={6} mb={3}>
         <Typography color='' variant='h4' mb={3}>
           Version anglaise
         </Typography>
         <ContactCard english data={data} loading={isLoading} />
       </Grid>
-
+      <Grid item xs={12} lg={6} mb={3}>
+        <Typography color='' variant='h4' mb={3}>
+          Version italienne
+        </Typography>
+        <ContactCard italian data={data} loading={isLoading} />
+      </Grid>
       <Grid item xs={12}>
         <Typography variant='h3' mt={5}>
           Modifications
