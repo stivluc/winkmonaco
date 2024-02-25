@@ -11,16 +11,19 @@ import {
   MenuItem,
   Select,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { AddShoppingCart } from '@mui/icons-material';
 import { translate } from '@/lib/translations/translate';
 import { useRouter } from 'next/router';
 import { useCart } from '@/contexts/CartContext';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export const ProductCard = ({ product, language }) => {
   const router = useRouter();
   const { dispatch, cart } = useCart();
+  const isMobile = useMediaQuery('(max-width:600px)'); // Check if the screen width is less than or equal to 600px
 
   const defaultSize = product.sizes?.split(';')[0];
   const [selectedSize, setSelectedSize] = useState(defaultSize);
@@ -64,7 +67,7 @@ export const ProductCard = ({ product, language }) => {
       });
     }
 
-    console.log(cart);
+    // console.log(cart);
   };
 
   const hasMultipleSizes = product.sizes && product.sizes.split(';').length > 1;
@@ -98,7 +101,7 @@ export const ProductCard = ({ product, language }) => {
       )}
       <Card
         sx={{
-          height: '25.5rem',
+          height: '30.5rem',
           borderRadius: '1rem',
           backgroundColor: '#fff',
           position: 'relative', // For positioning the "Out of stock" overlay
@@ -108,8 +111,20 @@ export const ProductCard = ({ product, language }) => {
         elevation={3}
       >
         <CardActionArea onClick={() => router.push('/shop/' + product._id)}>
-          <Box sx={{ height: '14rem', position: 'relative' }}>
-            <CardMedia component='img' image={product.imageUrl} alt='Image' sx={{ height: '100%' }} />
+          <Box sx={{ height: '19rem', position: 'relative' }}>
+            <Image
+              src={product.imageUrl}
+              style={{
+                objectFit: isMobile ? 'cover' : 'contain',
+                width: '100%',
+                height: '100%',
+              }}
+              alt='Image article'
+              sizes='100vw'
+              width='0'
+              height='0'
+              priority
+            />
           </Box>
           <CardContent sx={{ height: '11.5rem' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

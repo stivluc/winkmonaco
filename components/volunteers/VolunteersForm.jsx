@@ -192,6 +192,24 @@ const VolunteersForm = ({ loading, data, language }) => {
         body: JSON.stringify(values),
       });
       if (response.ok) {
+        // Send confirmationEmail
+        const emailType = values?.iWantKit ? 'kitWinkEmail' : 'volunteerEmail';
+        const email = values?.email; // Replace with the actual recipient email
+
+        // Send the request to the automaticEmail API endpoint
+        const emailResponse = await fetch(
+          `/api/emails/automaticEmail?emailType=${emailType}&language=${language}&email=${email}`,
+          {
+            method: 'POST',
+          }
+        );
+
+        if (emailResponse.ok) {
+          console.log('Confirmation email successfully sent');
+        } else {
+          console.error('Error sending confirmation email');
+        }
+
         setIsOpened(true);
         setTimeout(() => {
           router.push('/');

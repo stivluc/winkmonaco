@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import React, { useContext, useEffect, useState } from 'react';
 
-const Payment = () => {
+const OrderPayment = () => {
   const [status, setStatus] = useState('');
   const [isOpened, setIsOpened] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -40,7 +40,7 @@ const Payment = () => {
     const setupPaymentForm = async () => {
       try {
         if (values.amount < 1 || values?.amount === undefined) {
-          router.push('/');
+          router.push('/shop');
           return;
         }
 
@@ -92,16 +92,17 @@ const Payment = () => {
 
           if (response.status === 200 && paymentResponse.orderStatus === 'PAID') {
             try {
-              const res = await fetch('/api/donations/' + router.query._id, {
+              const res = await fetch('/api/orders/' + router.query._id, {
                 method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ ...values, isPaid: true }),
               });
+
               if (res.ok) {
-                // Send donationEmail
-                const emailType = 'donationEmail';
+                // Send orderEmail
+                const emailType = 'orderEmail';
                 const email = router.query.email; // Replace with the actual recipient email
 
                 // Send the request to the automaticEmail API endpoint
@@ -113,9 +114,9 @@ const Payment = () => {
                 );
 
                 if (emailResponse.ok) {
-                  console.log('Donation confirmation email successfully sent');
+                  console.log('Order confirmation email successfully sent');
                 } else {
-                  console.error('Error sending donation confirmation email');
+                  console.error('Error sending order confirmation email');
                 }
                 setStatus('success');
                 setIsOpened(true);
@@ -123,34 +124,18 @@ const Payment = () => {
                   router.push('/');
                 }, 10000);
               } else {
+                // Error updating order
                 enqueueSnackbar(translate({ tKey: 'general.errorOccurred', lang: language }), { variant: 'error' });
               }
             } catch (err) {
+              // General error
               enqueueSnackbar(translate({ tKey: 'general.errorOccurred', lang: language }), { variant: 'error' });
               console.error(err);
             }
           } else {
+            // Handle other cases as needed
             setStatus('error');
             setIsOpened(true);
-
-            // Send orderEmail
-            const emailType = 'donationFailedEmail';
-            const email = router.query.email; // Replace with the actual recipient email
-
-            // Send the request to the automaticEmail API endpoint
-            const emailResponse = await fetch(
-              `/api/emails/automaticEmail?emailType=${emailType}&language=${language}&email=${email}`,
-              {
-                method: 'POST',
-              }
-            );
-
-            if (emailResponse.ok) {
-              console.log('Donation failed email successfully sent');
-            } else {
-              console.error('Error sending donation failed email');
-            }
-
             setTimeout(() => {
               router.reload();
             }, 6000);
@@ -176,13 +161,13 @@ const Payment = () => {
   return (
     <React.Fragment>
       <Head>
-        <title>{translate({ tKey: 'nav.donate', lang: language }) + ' - Wink Monaco'}</title>
+        <title>{translate({ tKey: 'nav.shop', lang: language }) + ' - Wink Monaco'}</title>
       </Head>
       {status === 'success' && (
         <SuccessModal
           opened={isOpened}
-          title={translate({ lang: language, tKey: 'donate.thankYou' })}
-          text={translate({ lang: language, tKey: 'donate.modalText' })}
+          title={translate({ lang: language, tKey: 'shop.confirmationTitle' })}
+          text={translate({ lang: language, tKey: 'shop.confirmation' })}
         />
       )}
       {status === 'error' && (
@@ -205,7 +190,7 @@ const Payment = () => {
           {translate({ tKey: 'donate.title', lang: language })}
         </Typography>
         <Box sx={{ marginTop: '-1rem', textAlign: 'left' }}>
-          <Button startIcon={<ArrowBack />} onClick={() => router.push('/donate/oneTime')}>
+          <Button startIcon={<ArrowBack />} onClick={() => router.push('/shop/cart/checkout')}>
             {translate({ tKey: 'general.back', lang: language })}
           </Button>
         </Box>
@@ -245,7 +230,7 @@ const Payment = () => {
   );
 };
 
-export default Payment;
+export default OrderPayment;
 
 export async function getServerSideProps(context) {
   return {

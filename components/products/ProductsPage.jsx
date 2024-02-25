@@ -25,13 +25,15 @@ const ProductsPage = ({ data, loading, language }) => {
         <Grid container>
           {loading ? (
             <ProductsLoading />
-          ) : !loading && (data?.length === 0 || !data) ? (
+          ) : !loading && (data?.length === 0 || !data || data.every((item) => !item.isActive)) ? (
             <ShopUnavailable />
           ) : (
             <React.Fragment>
-              {data?.map((product) => (
-                <ProductCard product={product} language={language} key={product._id} />
-              ))}
+              {data
+                ?.sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
+                .map((product) => (
+                  <ProductCard product={product} language={language} key={product._id} />
+                ))}
             </React.Fragment>
           )}
         </Grid>

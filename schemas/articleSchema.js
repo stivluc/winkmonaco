@@ -115,7 +115,7 @@ export const articleSchema = [
     name: 'videoUrl',
     placeholder: "URL de la vidéo de l'article",
     title:
-      'Lien à compléter: https://youtube.com/embed/[ID DE LA VIDEO] - NE PAS UTILISER LE LIEN DE LA VIDEO DIRECTEMENT',
+      'Lien à compléter: https://youtube.com/embed/[ID DE LA VIDEO] - NE PAS UTILISER LE LIEN DE LA VIDEO DIRECTEMENT | Tutoriel: https://docs.google.com/document/d/1QS-sooZ2E9BaXQHjUlZcR4mp5LLuGsV1pDlSu-fo-zU/edit?usp=sharing',
     type: 'text',
     initialValue: '',
     muiHeaderName: 'URL de la vidéo',

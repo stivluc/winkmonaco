@@ -20,6 +20,7 @@ import ProductCarousel from './ProductCarousel';
 import FloatingCart from './FloatingCart';
 import { useCart } from '@/contexts/CartContext';
 import ProductLoading from './ProductLoading';
+import { renderTextWithLineBreaks } from '@/lib/renderTextWithLineBreaks';
 
 const Product = ({ id }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -132,7 +133,7 @@ const Product = ({ id }) => {
               xs={12}
               md={6}
               sx={{
-                padding: '0.5rem 1.5rem 2rem',
+                padding: { xs: '0.5rem 0.5rem 1rem', md: '0.5rem 1.5rem 2rem' },
                 textAlign: 'left',
                 display: 'flex',
                 flexDirection: 'column',
@@ -141,7 +142,7 @@ const Product = ({ id }) => {
             >
               <Typography variant='h4'>{product.name}</Typography>
 
-              <Typography sx={{ overflow: 'hidden' }}>{product.description}</Typography>
+              <Typography sx={{ overflow: 'hidden' }}>{renderTextWithLineBreaks(product.description)}</Typography>
 
               <Box>
                 <Box
