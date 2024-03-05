@@ -42,6 +42,7 @@ function Navbar(props) {
     // { name: <Translation tKey='nav.concerned' />, path: '/concerned' },
     { name: <Translation tKey='nav.contact' />, path: '/contact' },
     { name: <Translation tKey='nav.about' />, path: '/about' },
+    { name: <Translation tKey='nav.stayInformed' />, path: '/stayInformed' },
   ];
 
   const handleDrawerToggle = () => {
