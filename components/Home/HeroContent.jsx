@@ -98,14 +98,12 @@ const HeroContent = () => {
         item
         xs={12}
         sx={{
-          height: 'fit-content',
           marginTop: isMobile ? 4 : -6,
           marginBottom: isMobile ? 0 : -10,
           position: 'relative', // new style
           paddingBottom: '56.25%', // for 16:9 aspect ratio
           height: 0, // use padding to determine height
-        }}
-      >
+        }}      >
         <div
           style={{
             position: 'absolute',
@@ -129,10 +127,10 @@ const HeroContent = () => {
             }}
             src={
               language === 'fr'
-                ? `https://youtube.com/embed/qHtXdPnzfRg`
+                ? `https://www.youtube.com/watch?v=CSMDTyNL9FY`
                 : language === 'en'
-                ? `https://youtube.com/embed/AemBjXs2zLc`
-                : `https://youtube.com/embed/XGqGgrLX0qY`
+                ? `https://youtu.be/7-8GrlmSuRo`
+                : `https://youtu.be/4YL9DozzUS4`
             }
             allow='accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
             allowFullScreen
