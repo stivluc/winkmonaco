@@ -127,10 +127,10 @@ const HeroContent = () => {
             }}
             src={
               language === 'fr'
-                ? `https://www.youtube.com/watch?v=CSMDTyNL9FY`
+                ? `https://www.youtube.com/embed/CSMDTyNL9FY?si=eOYawGJzEyRcpq1`
                 : language === 'en'
-                ? `https://youtu.be/7-8GrlmSuRo`
-                : `https://youtu.be/4YL9DozzUS4`
+                ? `https://www.youtube.com/embed/7-8GrlmSuRo?si=oddS_xeun_B6tc_3`
+                : `https://www.youtube.com/embed/4YL9DozzUS4?si=_shwvoxFCrVEOpmm`
             }
             allow='accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
             allowFullScreen
