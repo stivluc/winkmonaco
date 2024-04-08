@@ -4,12 +4,21 @@ import { SubscriptionModel } from '@/schemas/subscriptionSchema';
 import { VolunteerModel } from '@/schemas/volunteerSchema';
 import { EmailModel } from '@/schemas/emailSchema';
 import nodemailer from 'nodemailer';
+import nextConnect from 'next-connect';
+import multer from 'multer';
 
-export default async function handler(req, res) {
-  const { group, subject, text, emails, isHtml } = req.body;
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+const handler = nextConnect();
+
+handler.use(upload.array('attachments'));
+handler.post(async (req, res) => {
   await dbConnect();
+  const { group, subject, text, emails, isHtml } = req.body;
 
-  let recipientEmails = await getEmailsBasedOnGroup(group, emails); // Assuming this function encapsulates the switch logic and returns the emails array
+
+  let recipientEmails = await getEmailsBasedOnGroup(group, JSON.parse(req.body.emails || '[]'));
 
   // Deduplicate recipientEmails
   recipientEmails = [...new Set(recipientEmails)];
@@ -25,21 +34,23 @@ export default async function handler(req, res) {
   });
 
   try {
-    await Promise.all(
-      recipientEmails.map(async (email) => {
-        const mailOptions = {
-          from: {
-            name: 'Wink Monaco',
-            address: 'noreply.winkmonaco@gmail.com',
-          },
-          to: email,
-          subject: subject,
-          html: isHtml ? text : textToHTML(text),
-        };
-        await mailTransport.sendMail(mailOptions);
-      })
-    );
 
+    const sendEmailPromises = recipientEmails.map(email => {
+      const mailOptions = {
+        from: 'noreply.winkmonaco@gmail.com',
+        to: email,
+        subject: subject,
+        html: isHtml ? text : textToHTML(text),
+        attachments: req.files.map(file => ({
+          filename: file.originalname,
+          content: file.buffer,
+          contentType: file.mimetype,
+        })),
+      };
+      return mailTransport.sendMail(mailOptions);
+    });
+
+    await Promise.all(sendEmailPromises);
     // Log and save email record after all emails are sent
     console.log('All emails sent successfully');
 
@@ -53,12 +64,12 @@ export default async function handler(req, res) {
 
     await newEmail.save();
 
-    res.status(201).json({ message: 'Emails sent successfully' });
+    res.json({ message: 'Emails sent successfully' });
   } catch (error) {
     console.error('Error sending emails:', error);
     res.status(500).json({ error: 'Error sending emails' });
   }
-}
+});
 
 function textToHTML(text) {
   // Simple newline to <br> conversion for plain text emails
@@ -122,3 +133,12 @@ async function getEmailsBasedOnGroup(group, emails) {
 
   return recipientEmails;
 }
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+export default handler;
+
