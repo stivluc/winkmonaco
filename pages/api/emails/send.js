@@ -7,18 +7,19 @@ import nodemailer from 'nodemailer';
 import nextConnect from 'next-connect';
 import multer from 'multer';
 
-
 const upload = multer({ storage: multer.memoryStorage() });
 
 const handler = nextConnect();
 
 handler.use(upload.array('attachments'));
+
 handler.post(async (req, res) => {
   await dbConnect();
-  const { group, subject, text, emails, isHtml } = req.body;
 
+  const { group, subject, text, isHtml } = req.body;
+  let emails = req.body.emails ? JSON.parse(req.body.emails) : [];
 
-  let recipientEmails = await getEmailsBasedOnGroup(group, JSON.parse(req.body.emails || '[]'));
+  let recipientEmails = await getEmailsBasedOnGroup(group, emails);
 
   // Deduplicate recipientEmails
   recipientEmails = [...new Set(recipientEmails)];
@@ -34,23 +35,26 @@ handler.post(async (req, res) => {
   });
 
   try {
+    await Promise.all(
+      recipientEmails.map(async (email) => {
+        const mailOptions = {
+          from: {
+            name: 'Wink Monaco',
+            address: 'noreply.winkmonaco@gmail.com',
+          },
+          to: email,
+          subject: subject,
+          html: isHtml ? text : textToHTML(text),
+          attachments: req.files.map(file => ({
+            filename: file.originalname,
+            content: file.buffer,
+            contentType: file.mimetype,
+          })),
+        };
+        await mailTransport.sendMail(mailOptions);
+      })
+    );
 
-    const sendEmailPromises = recipientEmails.map(email => {
-      const mailOptions = {
-        from: 'noreply.winkmonaco@gmail.com',
-        to: email,
-        subject: subject,
-        html: isHtml ? text : textToHTML(text),
-        attachments: req.files.map(file => ({
-          filename: file.originalname,
-          content: file.buffer,
-          contentType: file.mimetype,
-        })),
-      };
-      return mailTransport.sendMail(mailOptions);
-    });
-
-    await Promise.all(sendEmailPromises);
     // Log and save email record after all emails are sent
     console.log('All emails sent successfully');
 
@@ -64,7 +68,7 @@ handler.post(async (req, res) => {
 
     await newEmail.save();
 
-    res.json({ message: 'Emails sent successfully' });
+    res.status(201).json({ message: 'Emails sent successfully' });
   } catch (error) {
     console.error('Error sending emails:', error);
     res.status(500).json({ error: 'Error sending emails' });
@@ -141,4 +145,3 @@ export const config = {
 };
 
 export default handler;
-
