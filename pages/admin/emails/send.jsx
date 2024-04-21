@@ -130,10 +130,9 @@ const SendEmail = () => {
       formData.append('isHtml', values.isHtml.toString());
       formData.append('verification', values.verification.toString());
 
-      const files = fileInput.files;
-      for (let i = 0; i < files.length; i++) {
-        formData.append('attachments', files[i]);
-      }
+      attachments.forEach((file, index) => {
+        formData.append(`attachments[${index}]`, file, file.name);
+      });
 
       if (emails && emails.length > 0) {
         formData.append('emails', JSON.stringify(emails));
