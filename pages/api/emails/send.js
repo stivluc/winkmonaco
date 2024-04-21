@@ -4,6 +4,7 @@ import { SubscriptionModel } from '@/schemas/subscriptionSchema';
 import { VolunteerModel } from '@/schemas/volunteerSchema';
 import { EmailModel } from '@/schemas/emailSchema';
 import nodemailer from 'nodemailer';
+import { StayInformedModel } from "@/schemas/stayInformedSchema";
 
 export default async function handler(req, res) {
   const { group, subject, text, emails, isHtml } = req.body;
@@ -76,7 +77,8 @@ async function getEmailsBasedOnGroup(group, emails) {
       const donationEmails = await DonationModel.distinct('email').exec();
       const subscriptionEmails = await SubscriptionModel.distinct('email').exec();
       const volunteersEmails = await VolunteerModel.distinct('email').exec();
-      recipientEmails = [...donationEmails, ...subscriptionEmails, ...volunteersEmails];
+      const stayInformedEmails = await StayInformedModel.distinct('email').exec();
+      recipientEmails = [...donationEmails, ...subscriptionEmails, ...volunteersEmails, ...stayInformedEmails];
       break;
     case 'donators':
       const donationEmails2 = await DonationModel.distinct('email').exec();
