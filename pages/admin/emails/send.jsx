@@ -10,7 +10,6 @@ import {
   FormGroup,
   FormHelperText,
   Grid,
-  IconButton,
   MenuItem,
   TextField,
   Typography,
@@ -27,7 +26,6 @@ const SendEmail = () => {
 
   const [emails, setEmails] = useState([]);
   const [fileName, setFileName] = useState('');
-  const [attachments, setAttachments] = useState([]);
 
   const handleFileUpload = (e) => {
     if (!e.target.files) {
@@ -51,13 +49,6 @@ const SendEmail = () => {
       setEmails(uniqueEmails);
     };
     reader.readAsText(file);
-  };
-  const handleAttachments = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    setAttachments(prev => [...prev, ...selectedFiles]);
-  };
-  const handleRemoveAttachment = (indexToRemove) => {
-    setAttachments((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
   const parseCSV = (csvText) => {
@@ -123,28 +114,14 @@ const SendEmail = () => {
     try {
       setIsSending(true);
 
-      const formData = new FormData();
-      formData.append('group', values.group);
-      formData.append('subject', values.subject);
-      formData.append('text', values.text);
-      formData.append('isHtml', values.isHtml.toString());
-      formData.append('verification', values.verification.toString());
-
-      attachments.forEach((file, index) => {
-        formData.append(`attachments[${index}]`, file, file.name);
-      });
-
-      if (emails && emails.length > 0) {
-        formData.append('emails', JSON.stringify(emails));
-      }
-
-      attachments.forEach((file, index) => {
-        formData.append(`attachments[${index}]`, file, file.name);
-      });
+      values.emails = emails;
 
       const response = await fetch('/api/emails/send', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
       });
 
       if (response.ok) {
@@ -254,34 +231,9 @@ const SendEmail = () => {
                 ></TextField>
               </Grid>
               <Grid item xs={12} mt={2}>
-                <input
-                  type="file"
-                  onChange={handleAttachments}
-                  multiple
-                  accept="*"
-                  style={{ display: 'none' }}
-                  id="file-upload"
-                />
-                <label htmlFor="file-upload">
-                  <LoadingButton component="span" loading={false} variant="contained" color="secondary" startIcon={<CloudUpload />}>
-                    Ajouter des pièces jointes
-                  </LoadingButton>
-                </label>
-                <Box mt={2}>
-                  {attachments.map((file, index) => (
-                    <Box key={index} display="flex" alignItems="center" mt={1}>
-                      <Typography variant="body1">{file.name}</Typography>
-                      <IconButton onClick={() => handleRemoveAttachment(index)}>
-                        <Cancel/>
-                      </IconButton>
-                    </Box>
-                  ))}
-                </Box>
-              </Grid>
-              <Grid item xs={12} mt={2}>
                 <FormGroup>
                   <FormControlLabel
-                    control={<Checkbox/>}
+                    control={<Checkbox />}
                     value={formik.values.isHtml}
                     checked={formik.values.isHtml}
                     label={'Le texte est écrit en HTML'}
