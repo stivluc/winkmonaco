@@ -88,6 +88,9 @@ async function getEmailsBasedOnGroup(group, emails) {
     case 'oneTimeDonators':
       recipientEmails = await DonationModel.distinct('email').exec();
       break;
+    case 'stayInformed':
+      recipientEmails = await StayInformedModel.distinct('email').exec();
+      break;
     case 'donatorsSup200':
       recipientEmails = await DonationModel.find({ amount: { $gt: 200 } }, 'email')
         .distinct('email')

@@ -108,6 +108,7 @@ const SendEmail = () => {
     { value: 'volunteersWithKit', label: 'Tous bénévoles avec kit' },
     { value: 'volunteers', label: 'Tous bénévoles' },
     { value: 'import', label: 'Liste importée' },
+    { value: 'stayInformed', label: 'Adresses de la page restez informés' },
   ];
 
   const handleSubmit = async (values) => {
