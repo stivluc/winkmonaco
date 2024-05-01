@@ -96,16 +96,7 @@ const VolunteersForm = ({ loading, data, language }) => {
         /^(\+[0-9]{1,3}\s?)?(\([0-9]{1,}\)\s?)?([0-9]|-|\s){5,}$/,
         translate({ tKey: 'helperTexts.invalidTel', lang: language })
       ),
-    job: string().max(
-      64,
-      translate({ tKey: 'helperTexts.job', lang: language }) +
-        ' ' +
-        translate({ tKey: 'helperTexts.cannotExceed', lang: language }) +
-        ' 64 ' +
-        translate({ tKey: 'helperTexts.characters', lang: language })
-    ),
     comment: string(),
-    iAgreeRecontact: bool(),
   });
 
   const titleOptions = [
@@ -151,9 +142,7 @@ const VolunteersForm = ({ loading, data, language }) => {
       email: '',
       tel: '',
       country: '',
-      job: '',
       comment: '',
-      iAgreeRecontact: false,
     },
     enableReinitialize: true,
     validationSchema,
@@ -277,18 +266,6 @@ const VolunteersForm = ({ loading, data, language }) => {
                     disabled={isSending || false}
                   />
                 </Grid>
-                <Grid item mt={0.5} xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label={translate({ tKey: 'general.job', lang: language })}
-                    name={'job'}
-                    value={formik.values.job}
-                    onChange={formik.handleChange}
-                    error={formik.touched.job && !!formik.errors.job}
-                    helperText={formik.touched.job && formik.errors.job}
-                    disabled={isSending || false}
-                  />
-                </Grid>
                 <Grid item mt={0.5} xs={12}>
                   <TextField
                     fullWidth
@@ -302,19 +279,6 @@ const VolunteersForm = ({ loading, data, language }) => {
                     helperText={formik.touched.comment && formik.errors.comment}
                     disabled={isSending || false}
                   />
-                </Grid>
-                <Grid item xs={12}>
-                  <FormGroup>
-                    <FormControlLabel
-                      control={<Checkbox />}
-                      value={formik.values.iAgreeRecontact || false}
-                      checked={formik.values.iAgreeRecontact || false}
-                      label={translate({ tKey: 'stayInformed.iAgreeRecontact', lang: language })}
-                      name={'iAgreeRecontact'}
-                      onChange={formik.handleChange}
-                      disabled={isSending}
-                    />
-                  </FormGroup>
                 </Grid>
                 <Grid item xs={12} mt={1}>
                   <LoadingButton

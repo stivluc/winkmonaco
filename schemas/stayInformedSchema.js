@@ -109,19 +109,6 @@ export const stayInformedSchema = [
       .matches(/^(\+[0-9]{1,3}\s?)?(\([0-9]{1,}\)\s?)?([0-9]|-|\s){5,}$/, 'Numéro de téléphone invalide'),
   },
   {
-    name: 'job',
-    placeholder: 'Profession',
-    type: 'text',
-    initialValue: '',
-    muiHeaderName: 'Profession',
-    muiType: 'string',
-    muiFlex: 2,
-    muiMdSize: 6,
-    mongooseType: String,
-    mongooseRequired: false,
-    yupValidations: string().max(64, 'La profession ne peut pas faire plus de 64 caractères'),
-  },
-  {
     name: 'comment',
     placeholder: 'Commentaire',
     type: 'text',
@@ -134,24 +121,6 @@ export const stayInformedSchema = [
     mongooseType: String,
     mongooseRequired: false,
     yupValidations: string(),
-  },
-  {
-    name: 'iAgreeRecontact',
-    type: 'checkbox',
-    label: 'Souhaite rester informé',
-    initialValue: false,
-    muiHeaderName: 'Informer',
-    muiType: 'boolean',
-    muiFlex: 1.5,
-    muiRenderCell: (params) =>
-      params.row.iWantKit ? (
-        <CheckCircle sx={{ color: 'green', fontSize: '2rem' }} />
-      ) : (
-        <Cancel sx={{ color: 'red', fontSize: '2rem' }} />
-      ),
-    mongooseType: Boolean,
-    mongooseRequired: true,
-    yupValidations: bool(),
   },
 ];
 
