@@ -15,7 +15,7 @@ export const ArticlesPage = ({ data, loading, language }) => {
   const [page, setPage] = useState(1);
   const articlesPerPage = 8;
 
-  const [selectedStartDate, setSelectedStartDate] = useState(dayjs(new Date(2023, 0)));
+  const [selectedStartDate, setSelectedStartDate] = useState(dayjs().startOf('year'));
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [filteredData, setFilteredData] = useState([]);
 
