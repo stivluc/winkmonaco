@@ -92,9 +92,7 @@ const VolunteersForm = ({ loading, data, language }) => {
           ' 64 ' +
           translate({ tKey: 'helperTexts.characters', lang: language })
       ),
-    tel: string()
-      .required(translate({ tKey: 'helperTexts.tel', lang: language }))
-      .matches(
+    tel: string().matches(
         /^(\+[0-9]{1,3}\s?)?(\([0-9]{1,}\)\s?)?([0-9]|-|\s){5,}$/,
         translate({ tKey: 'helperTexts.invalidTel', lang: language })
       ),
@@ -248,6 +246,21 @@ const VolunteersForm = ({ loading, data, language }) => {
                     autoCapitalize='off'
                   />
                 </Grid>
+                <Grid item mt={0.5} xs={12} md={4.75}>
+                  <TextField
+                    fullWidth
+                    label={translate({ tKey: 'general.country', lang: language })}
+                    name={'country'}
+                    value={formik.values.country}
+                    onChange={formik.handleChange}
+                    error={formik.touched.country && !!formik.errors.country}
+                    helperText={formik.touched.country && formik.errors.country}
+                    disabled={isSending || false}
+                  />
+                </Grid>
+                <Grid item mt={0.5} xs={12}>
+                  <Typography>{translate({ tKey: 'general.optional', lang: language })}</Typography>
+                </Grid>
                 <Grid item mt={0.5} xs={12} md={6}>
                   <MuiPhoneNumber
                     sx={{ '& svg': { height: '1em', borderRadius: '5px' } }}
@@ -263,21 +276,6 @@ const VolunteersForm = ({ loading, data, language }) => {
                     helperText={formik.touched.tel && formik.errors.tel}
                     disabled={isSending || false}
                   />
-                </Grid>
-                <Grid item mt={0.5} xs={12} md={4.75}>
-                  <TextField
-                    fullWidth
-                    label={translate({ tKey: 'general.country', lang: language })}
-                    name={'country'}
-                    value={formik.values.country}
-                    onChange={formik.handleChange}
-                    error={formik.touched.country && !!formik.errors.country}
-                    helperText={formik.touched.country && formik.errors.country}
-                    disabled={isSending || false}
-                  />
-                </Grid>
-                <Grid item mt={0.5} xs={12}>
-                  <Typography>{translate({ tKey: 'general.optional', lang: language })}</Typography>
                 </Grid>
                 <Grid item mt={0.5} xs={12} md={6}>
                   <TextField
