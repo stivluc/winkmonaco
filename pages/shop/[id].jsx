@@ -22,8 +22,9 @@ export default ShopProduct;
 export async function getServerSideProps(ctx) {
   try {
     const hostname = ctx.req.headers.host;
+    const id = ctx.params.id;
 
-    const { data } = await (await fetch(`https://` + hostname + `/api/products/` + ctx.params.id)).json();
+    const { data } = await (await fetch(`https://` + hostname + `/api/products/` + id)).json();
     return {
       props: {
         product: data || [],
