@@ -22,9 +22,9 @@ export default ArticlePage;
 
 export async function getServerSideProps(ctx) {
   try {
-    //const hostname = ctx.req.headers.host;
+    const hostname = ctx.req.headers.host;
 
-    const { data } = await (await fetch(process.env.API_URL + `/api/articles/` + ctx.params.id)).json();
+    const { data } = await (await fetch(`https://` + hostname + `/api/articles/` + ctx.params.id)).json();
     return {
       props: {
         article: data || [],
