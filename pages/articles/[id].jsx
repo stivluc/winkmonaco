@@ -5,7 +5,9 @@ import Head from 'next/head';
 import { translate } from '@/lib/translations/translate';
 import { LanguageContext } from '@/contexts/LanguageContext';
 
-const ArticlePage = ({ article }) => {
+const ArticlePage = () => {
+  const router = useRouter();
+  const { id } = router.query;
   const { language } = useContext(LanguageContext);
 
   return (
@@ -13,30 +15,15 @@ const ArticlePage = ({ article }) => {
       <Head>
         <title>{translate({ tKey: 'nav.articles', lang: language }) + ' - Wink Monaco'}</title>
       </Head>
-      <Article article={article} />
+      <Article id={id} />
     </React.Fragment>
   );
 };
 
 export default ArticlePage;
 
-export async function getServerSideProps(ctx) {
-  try {
-    const hostname = ctx.req.headers.host;
-    const id = ctx.params.id;
-
-    const { data } = await (await fetch(`https://` + hostname + `/api/articles/` + id)).json();
-    return {
-      props: {
-        article: data || [],
-      },
-    };
-  } catch (error) {
-    console.error(error);
-    return {
-      props: {
-        article: [], // Fallback empty array
-      },
-    };
-  }
+export async function getServerSideProps(context) {
+  return {
+    props: {}, // will be passed to the page component as props
+  };
 }
