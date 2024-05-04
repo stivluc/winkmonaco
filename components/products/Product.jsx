@@ -22,7 +22,7 @@ import { useCart } from '@/contexts/CartContext';
 import ProductLoading from './ProductLoading';
 import { renderTextWithLineBreaks } from '@/lib/renderTextWithLineBreaks';
 
-const Product = ({ id }) => {
+const Product = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [product, setProduct] = useState({});
   const { language } = useContext(LanguageContext);
@@ -34,6 +34,7 @@ const Product = ({ id }) => {
   const hasMultipleSizes = product.sizes && product.sizes.split(';').length > 1;
 
   const router = useRouter();
+  const { id } = router.query;
 
   const handleSizeChange = (event) => {
     setSelectedSize(event.target.value);
@@ -78,7 +79,11 @@ const Product = ({ id }) => {
   };
 
   useEffect(() => {
-    fetchData('products', setIsLoading, setProduct, id);
+    if (id) {
+      fetchData('products', setIsLoading, setProduct, id);
+    } else {
+      router.reload();
+    }
   }, [id]);
 
   useEffect(() => {

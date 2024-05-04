@@ -15,7 +15,7 @@ const ShopProduct = () => {
       <Head>
         <title>{translate({ tKey: 'nav.shop', lang: language }) + ' - Wink Monaco'}</title>
       </Head>
-      <Product id={id} />
+      <Product />
     </React.Fragment>
   );
 };

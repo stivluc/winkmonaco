@@ -9,17 +9,22 @@ import { ArrowBack } from '@mui/icons-material';
 import { translate } from '@/lib/translations/translate';
 import { useRouter } from 'next/router';
 
-const Article = ({ id }) => {
+const Article = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [article, setArticle] = useState({});
   const { language } = useContext(LanguageContext);
 
   const router = useRouter();
+  const { id } = router.query;
 
   const isMobile = useMediaQuery('(max-width:600px)'); // Check if the screen width is less than or equal to 600px
 
   useEffect(() => {
-    fetchData('articles', setIsLoading, setArticle, id);
+    if (id) {
+      fetchData('articles', setIsLoading, setArticle, id);
+    } else {
+      router.reload();
+    }
   }, [id]);
 
   return (
