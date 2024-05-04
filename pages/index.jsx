@@ -46,9 +46,10 @@ export default Home;
 
 export async function getServerSideProps(ctx) {
   try {
-    const hostname = ctx.req.headers.host;
+    //const hostname = ctx.req.headers.host;
 
-    const { data } = await (await fetch('http://' + hostname + `/api/articles/latest`)).json();
+    //const { data } = await (await fetch('https://' + hostname + `/api/articles/latest`)).json();
+    const { data } = await (await fetch(process.env.API_URL + `/api/articles/latest`)).json();
     return {
       props: {
         articles: data || [],
