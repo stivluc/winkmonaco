@@ -1,19 +1,19 @@
 import { LanguageContext } from '@/contexts/LanguageContext';
 import React, { useContext, useState, useEffect } from 'react';
-import { fetchData } from '@/lib/handlers/fetchData';
+// import { fetchData } from '@/lib/handlers/fetchData';
 import ProductsPage from '@/components/products/ProductsPage';
 import Head from 'next/head';
 import { translate } from '@/lib/translations/translate';
 import { Typography } from '@mui/material';
 
-const Products = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [products, setProducts] = useState([]);
+const Products = ({ products }) => {
   const { language } = useContext(LanguageContext);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    fetchData('products', setIsLoading, setProducts);
-  }, []);
+  // useEffect(() => {
+  //   fetchData('products', setIsLoading, setProducts);
+  // }, []);
 
   return (
     <React.Fragment>
@@ -30,9 +30,29 @@ const Products = () => {
       <Typography variant='h1' sx={{ display: 'none' }}>
         {translate({ tKey: 'shop.title', lang: language })}
       </Typography>
-      <ProductsPage loading={isLoading} data={products} language={language} />
+      <ProductsPage data={products} language={language} />
     </React.Fragment>
   );
 };
 
 export default Products;
+
+export async function getServerSideProps(ctx) {
+  try {
+    //const hostname = ctx.req.headers.host;
+
+    const { data } = await (await fetch(process.env.API_URL + `/api/products`)).json();
+    return {
+      props: {
+        products: data || [],
+      },
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      props: {
+        products: [], // Fallback empty array
+      },
+    };
+  }
+}
