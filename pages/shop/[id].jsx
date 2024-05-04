@@ -6,16 +6,14 @@ import { useRouter } from 'next/router';
 import React, { useContext } from 'react';
 
 const ShopProduct = () => {
-  const router = useRouter();
   const { language } = useContext(LanguageContext);
-  const { id } = router.query;
 
   return (
     <React.Fragment>
       <Head>
         <title>{translate({ tKey: 'nav.shop', lang: language }) + ' - Wink Monaco'}</title>
       </Head>
-      <Product id={id} />
+      <Product />
     </React.Fragment>
   );
 };
