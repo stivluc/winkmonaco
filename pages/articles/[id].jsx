@@ -23,8 +23,9 @@ export default ArticlePage;
 export async function getServerSideProps(ctx) {
   try {
     const hostname = ctx.req.headers.host;
+    const id = ctx.params.id;
 
-    const { data } = await (await fetch(`https://` + hostname + `/api/articles/` + ctx.params.id)).json();
+    const { data } = await (await fetch(`https://` + hostname + `/api/articles/` + id)).json();
     return {
       props: {
         article: data || [],
