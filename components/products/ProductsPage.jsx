@@ -23,9 +23,7 @@ const ProductsPage = () => {
       }
     };
 
-    setTimeout(() => {
-      fetchData();
-    }, 500);
+    fetchData();
   }, []);
 
   return (

@@ -91,8 +91,6 @@ const Product = () => {
 
     if (id) {
       fetchData();
-    } else {
-      router.reload();
     }
   }, [id, router]);
 

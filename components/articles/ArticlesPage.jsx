@@ -45,9 +45,7 @@ export const ArticlesPage = () => {
       }
     };
 
-    setTimeout(() => {
-      fetchData();
-    }, 500);
+    fetchData();
   }, []);
 
   useEffect(() => {
