@@ -46,8 +46,6 @@ const ProductsPage = () => {
             <ProductsLoading />
           ) : !isLoading && (products?.length === 0 || !products || products.every((item) => !item.isActive)) ? (
             <React.Fragment>
-              {console.log('Unavailable')}
-              {console.log(products)}
               <ShopUnavailable />
             </React.Fragment>
           ) : (

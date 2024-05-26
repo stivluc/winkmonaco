@@ -44,7 +44,10 @@ export const ArticlesPage = () => {
         console.error(error);
       }
     };
-    fetchData();
+
+    setTimeout(() => {
+      fetchData();
+    }, 500);
   }, []);
 
   useEffect(() => {

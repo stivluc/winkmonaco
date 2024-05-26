@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { ArticlesPage } from '@/components/articles/ArticlesPage';
 import { translate } from '@/lib/translations/translate';
 import Head from 'next/head';
 import { Typography } from '@mui/material';
+import { LanguageContext } from '@/contexts/LanguageContext';
 
 const Articles = () => {
+  const { language } = useContext(LanguageContext);
+
   return (
     <React.Fragment>
       <Head>

@@ -1,5 +1,5 @@
 import { LanguageContext } from '@/contexts/LanguageContext';
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 // import { fetchData } from '@/lib/handlers/fetchData';
 import ProductsPage from '@/components/products/ProductsPage';
 import Head from 'next/head';
