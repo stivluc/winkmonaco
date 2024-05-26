@@ -63,7 +63,7 @@ export const ArticlesPage = ({ data, language, isLoading }) => {
         </Grid>
         {isLoading ? (
           <ArticlesLoading />
-        ) : !isLoading && data.length === 0 ? (
+        ) : !isLoading && data?.length === 0 ? (
           <NoResults language={language} />
         ) : (
           <React.Fragment>
@@ -77,7 +77,7 @@ export const ArticlesPage = ({ data, language, isLoading }) => {
               handleEndDateChange={setSelectedEndDate}
               language={language}
             />
-            {currentArticles.length === 0 && <NoResults filter language={language} year={selectedStartDate} />}
+            {currentArticles?.length === 0 && <NoResults filter language={language} year={selectedStartDate} />}
             {currentArticles.map((article) => (
               <ArticleCard
                 key={article.title + Math.random()}
@@ -89,7 +89,7 @@ export const ArticlesPage = ({ data, language, isLoading }) => {
             {/* Pagination */}
             <Grid item xs={12} sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
               <Pagination
-                count={Math.ceil(filteredData.length / articlesPerPage)}
+                count={Math.ceil(filteredData?.length / articlesPerPage)}
                 page={page}
                 onChange={(e, val) => setPage(val)}
                 size='large'

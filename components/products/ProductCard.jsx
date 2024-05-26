@@ -70,7 +70,7 @@ export const ProductCard = ({ product, language }) => {
     // console.log(cart);
   };
 
-  const hasMultipleSizes = product.sizes && product.sizes.split(';').length > 1;
+  const hasMultipleSizes = product.sizes && product.sizes.split(';')?.length > 1;
 
   return (
     <Grid

@@ -11,8 +11,8 @@ const PartnersContent = ({ partners, loading, language }) => {
   return (
     <React.Fragment>
       {loading && <PartnersLoading />}
-      {!loading && Object.keys(partners).length === 0 && <PartnersDefault language={language} />}
-      {!loading && Object.keys(partners).length > 0 && (
+      {!loading && Object.keys(partners)?.length === 0 && <PartnersDefault language={language} />}
+      {!loading && Object.keys(partners)?.length > 0 && (
         <React.Fragment>
           <Typography variant='body1' sx={{ marginTop: 4 }}>
             {renderTextWithLineBreaks(

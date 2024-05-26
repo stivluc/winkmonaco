@@ -55,7 +55,7 @@ const LatestNews = ({ articles, language }) => {
             fontSize: '2rem',
             color: 'primary.main',
             marginBottom: '0.5rem',
-            display: { xs: 'none', md: articles.length > 1 ? 'none' : 'flex' },
+            display: { xs: 'none', md: articles?.length > 1 ? 'none' : 'flex' },
           }}
         />
         <Typography sx={{ padding: { xs: '0', md: '0 5rem' } }}>

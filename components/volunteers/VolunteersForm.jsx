@@ -262,7 +262,7 @@ const VolunteersForm = ({ loading, data, language }) => {
             text={translate({ tKey: 'volunteers.modalText', lang: language })}
           />
           <Typography>
-            {Object.keys(data).length > 0
+            {Object.keys(data)?.length > 0
               ? renderTextWithLineBreaks(
                   language === 'en' ? data?.enFormText : language === 'it' ? data?.itFormText : data?.formText
                 )

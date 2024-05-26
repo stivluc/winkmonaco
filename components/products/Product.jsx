@@ -30,7 +30,7 @@ const Product = () => {
 
   const [selectedSize, setSelectedSize] = useState('');
 
-  const hasMultipleSizes = product.sizes && product.sizes.split(';').length > 1;
+  const hasMultipleSizes = product.sizes && product.sizes.split(';')?.length > 1;
 
   const router = useRouter();
   const { id } = router.query;
