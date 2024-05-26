@@ -43,14 +43,14 @@ const Product = () => {
     event.stopPropagation();
 
     // Find the existing item in the cart
-    const existingCartItem = cart.items.find((item) => item.id === product._id && item.size === selectedSize);
+    const existingCartItem = cart.items.find((item) => item.id === product?._id && item.size === selectedSize);
 
     // If the item exists, dispatch an 'UPDATE_QUANTITY' action instead of 'ADD_ITEM'
     if (existingCartItem) {
       dispatch({
         type: 'UPDATE_QUANTITY',
         payload: {
-          id: product._id,
+          id: product?._id,
           size: selectedSize,
           quantity: existingCartItem.quantity + 1, // Increment the quantity
         },
@@ -153,9 +153,9 @@ const Product = () => {
                 justifyContent: 'space-between',
               }}
             >
-              <Typography variant='h4'>{product.name}</Typography>
+              <Typography variant='h4'>{product?.name}</Typography>
 
-              <Typography sx={{ overflow: 'hidden' }}>{renderTextWithLineBreaks(product.description)}</Typography>
+              <Typography sx={{ overflow: 'hidden' }}>{renderTextWithLineBreaks(product?.description)}</Typography>
 
               <Box>
                 <Box
@@ -177,7 +177,7 @@ const Product = () => {
                         size='small'
                         sx={{ textAlign: 'left' }}
                       >
-                        {product.sizes.split(';').map((size) => (
+                        {product?.sizes.split(';').map((size) => (
                           <MenuItem key={size} value={size}>
                             {size}
                           </MenuItem>
