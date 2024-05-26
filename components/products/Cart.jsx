@@ -9,7 +9,6 @@ import React, { useContext } from 'react';
 
 const Cart = () => {
   const { cart, dispatch } = useCart();
-  
   const isMobile = useMediaQuery('(max-width:600px)'); // Check if the screen width is less than or equal to 600px
   const { language } = useContext(LanguageContext);
   const router = useRouter();
