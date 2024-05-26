@@ -30,7 +30,7 @@ const Product = () => {
 
   const [selectedSize, setSelectedSize] = useState('');
 
-  const hasMultipleSizes = product.sizes && product.sizes.split(';')?.length > 1;
+  const hasMultipleSizes = product?.sizes && product?.sizes.split(';')?.length > 1;
 
   const router = useRouter();
   const { id } = router.query;
@@ -100,19 +100,18 @@ const Product = () => {
     if (product?.isActive === false) {
       router.push('/shop');
     }
-    setSelectedSize(product.sizes?.split(';')[0] || '');
+    setSelectedSize(product?.sizes?.split(';')[0] || '');
   }, [product, router]);
 
   const pictures = [{ imgPath: product.imageUrl, label: 'Image 1' }];
 
-  if (product.imageUrl2) {
-    pictures.push({ imgPath: product.imageUrl2, label: 'Image 2' });
+  if (product?.imageUrl2) {
+    pictures?.push({ imgPath: product.imageUrl2, label: 'Image 2' });
   }
 
-  if (product.imageUrl3) {
-    pictures.push({ imgPath: product.imageUrl3, label: 'Image 3' });
+  if (product?.imageUrl3) {
+    pictures?.push({ imgPath: product.imageUrl3, label: 'Image 3' });
   }
-  
 
   return (
     <Box
