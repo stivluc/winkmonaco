@@ -112,6 +112,7 @@ const Product = () => {
   if (product.imageUrl3) {
     pictures.push({ imgPath: product.imageUrl3, label: 'Image 3' });
   }
+  
 
   return (
     <Box
