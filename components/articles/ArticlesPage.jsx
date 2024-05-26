@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Typography, Fade, Grid, Pagination, Button } from '@mui/material';
 import ArticlesLoading from './ArticlesLoading';
 import { useRouter } from 'next/router';
@@ -9,8 +9,9 @@ import NoResults from './NoResults';
 import dayjs from 'dayjs';
 import { ArrowBack } from '@mui/icons-material';
 import { translate } from '@/lib/translations/translate';
+import { LanguageContext } from '@/contexts/LanguageContext';
 
-export const ArticlesPage = ({ data, language, isLoading }) => {
+export const ArticlesPage = () => {
   // Pagination state
   const [page, setPage] = useState(1);
   const articlesPerPage = 8;
@@ -18,6 +19,10 @@ export const ArticlesPage = ({ data, language, isLoading }) => {
   const [selectedStartDate, setSelectedStartDate] = useState(dayjs().startOf('year'));
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [filteredData, setFilteredData] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [articles, setArticles] = useState([]);
+  const { language } = useContext(LanguageContext);
 
   const router = useRouter();
 
@@ -30,10 +35,25 @@ export const ArticlesPage = ({ data, language, isLoading }) => {
   };
 
   useEffect(() => {
-    const sortedArticles = filterByDate(data, selectedStartDate, selectedEndDate);
-    setFilteredData(sortedArticles);
-    setPage(1);
-  }, [data, selectedStartDate, selectedEndDate]);
+    const fetchData = async () => {
+      try {
+        const { data } = await (await fetch(`/api/articles`)).json();
+        setArticles(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (articles?.length > 0) {
+      const sortedArticles = filterByDate(articles, selectedStartDate, selectedEndDate);
+      setFilteredData(sortedArticles);
+      setPage(1);
+    }
+  }, [articles, selectedStartDate, selectedEndDate]);
 
   // Update the list of articles based on the current page
   const currentArticles = filteredData.slice(indexOfFirstArticle, indexOfLastArticle);
@@ -63,7 +83,7 @@ export const ArticlesPage = ({ data, language, isLoading }) => {
         </Grid>
         {isLoading ? (
           <ArticlesLoading />
-        ) : !isLoading && data?.length === 0 ? (
+        ) : !isLoading && articles?.length === 0 ? (
           <NoResults language={language} />
         ) : (
           <React.Fragment>
