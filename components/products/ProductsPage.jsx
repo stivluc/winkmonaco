@@ -1,12 +1,31 @@
 import { Box, Fade, Grid, Typography } from '@mui/material';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Translation from '../general/Translation';
 import ProductsLoading from './ProductsLoading';
 import FloatingCart from './FloatingCart';
 import ShopUnavailable from './ShopUnavailable';
 import { ProductCard } from './ProductCard';
+import { LanguageContext } from '@/contexts/LanguageContext';
 
-const ProductsPage = ({ data, loading, language }) => {
+const ProductsPage = () => {
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { language } = useContext(LanguageContext);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await (await fetch(`/api/products`)).json();
+        setProducts(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <Fade in={true} timeout={1000}>
       <Box
@@ -23,13 +42,17 @@ const ProductsPage = ({ data, loading, language }) => {
           <Translation tKey='shop.title' lang={language} />
         </Typography>
         <Grid container>
-          {loading ? (
+          {isLoading ? (
             <ProductsLoading />
-          ) : !loading && (data?.length === 0 || !data || data.every((item) => !item.isActive)) ? (
-            <ShopUnavailable />
+          ) : !isLoading && (products?.length === 0 || !products || products.every((item) => !item.isActive)) ? (
+            <React.Fragment>
+              {console.log('Unavailable')}
+              {console.log(products)}
+              <ShopUnavailable />
+            </React.Fragment>
           ) : (
             <React.Fragment>
-              {data
+              {products
                 ?.sort((a, b) => (a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1))
                 .map((product) => (
                   <ProductCard product={product} language={language} key={product._id} />

@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { fetchData } from '@/lib/handlers/fetchData';
 import { Button, Grid, Typography, useMediaQuery } from '@mui/material';
 import ArticleLoading from './ArticleLoading';
 import { LanguageContext } from '@/contexts/LanguageContext';
@@ -15,17 +14,28 @@ const Article = () => {
   const { language } = useContext(LanguageContext);
 
   const router = useRouter();
+
   const { id } = router.query;
 
   const isMobile = useMediaQuery('(max-width:600px)'); // Check if the screen width is less than or equal to 600px
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await (await fetch(`/api/articles/${id}`)).json();
+        setArticle(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     if (id) {
-      fetchData('articles', setIsLoading, setArticle, id);
+      fetchData();
     } else {
       router.reload();
     }
-  }, [id]);
+  }, [id, router]);
 
   return (
     <Grid

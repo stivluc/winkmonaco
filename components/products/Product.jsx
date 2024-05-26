@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { LanguageContext } from '@/contexts/LanguageContext';
-import { fetchData } from '@/lib/handlers/fetchData';
 import { AddShoppingCart, ArrowBack } from '@mui/icons-material';
 import { translate } from '@/lib/translations/translate';
 import { useRouter } from 'next/router';
@@ -79,12 +78,23 @@ const Product = () => {
   };
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await (await fetch(`/api/products/${id}`)).json();
+        setProduct(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+
     if (id) {
-      fetchData('products', setIsLoading, setProduct, id);
+      fetchData();
     } else {
       router.reload();
     }
-  }, [id]);
+  }, [id, router]);
 
   useEffect(() => {
     if (product?.isActive === false) {

@@ -6,14 +6,8 @@ import Head from 'next/head';
 import { translate } from '@/lib/translations/translate';
 import { Typography } from '@mui/material';
 
-const Products = ({ products }) => {
+const Products = () => {
   const { language } = useContext(LanguageContext);
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [products, setProducts] = useState([]);
-
-  // useEffect(() => {
-  //   fetchData('products', setIsLoading, setProducts);
-  // }, []);
 
   return (
     <React.Fragment>
@@ -30,29 +24,9 @@ const Products = ({ products }) => {
       <Typography variant='h1' sx={{ display: 'none' }}>
         {translate({ tKey: 'shop.title', lang: language })}
       </Typography>
-      <ProductsPage data={products} language={language} />
+      <ProductsPage />
     </React.Fragment>
   );
 };
 
 export default Products;
-
-export async function getServerSideProps(ctx) {
-  try {
-    const hostname = ctx.req.headers.host;
-
-    const { data } = await (await fetch(`https://` + hostname + `/api/products`)).json();
-    return {
-      props: {
-        products: data || [],
-      },
-    };
-  } catch (error) {
-    console.error(error);
-    return {
-      props: {
-        products: [], // Fallback empty array
-      },
-    };
-  }
-}

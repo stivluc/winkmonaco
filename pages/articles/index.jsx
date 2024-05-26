@@ -8,9 +8,23 @@ import { translate } from '@/lib/translations/translate';
 import Head from 'next/head';
 import { Typography } from '@mui/material';
 
-const Articles = ({ articles }) => {
-  //const [isLoading, setIsLoading] = useState(true);
+const Articles = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [articles, setArticles] = useState([]);
   const { language } = useContext(LanguageContext);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await (await fetch(`/api/articles`)).json();
+        setArticles(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <React.Fragment>
@@ -27,29 +41,9 @@ const Articles = ({ articles }) => {
       <Typography variant='h1' sx={{ display: 'none' }}>
         {translate({ tKey: 'articles.title', lang: language })}
       </Typography>
-      <ArticlesPage data={articles} language={language} />
+      <ArticlesPage data={articles} language={language} isLoading={isLoading} />
     </React.Fragment>
   );
 };
 
 export default Articles;
-
-export async function getServerSideProps(ctx) {
-  try {
-    const hostname = ctx.req.headers.host;
-
-    const { data } = await (await fetch(`https://` + hostname + `/api/articles`)).json();
-    return {
-      props: {
-        articles: data || [],
-      },
-    };
-  } catch (error) {
-    console.error(error);
-    return {
-      props: {
-        articles: [], // Fallback empty array
-      },
-    };
-  }
-}
